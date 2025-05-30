@@ -11,5 +11,5 @@ enum Judgement
     NONE
 };
 
-int getHitValue(int nodePerfectPosition);
+int GetHitValue(int nodePerfectPosition);
 

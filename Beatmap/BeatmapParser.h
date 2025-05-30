@@ -1,0 +1,84 @@
+#pragma once
+
+#include "Objects/HitObject.h"
+#include "Engine/LOG.hpp"
+#include "util/GameData.h"
+
+#include <string>
+#include <list>
+#include <allegro5/bitmap.h>
+
+class BeatmapParser
+{
+public:
+    BeatmapParser(const int& beatmapID, const std::string& difficultyName);
+    void Restart();
+    std::string GetAudioFilePath();
+    int GetPreviewTime();
+    int GetCountDown();
+    int GetTotalColumns();
+    HitObject GetNextHitObject();
+    void UpdateEvent(int musicPosition);
+    bool IsMapEnded();
+
+private:
+    enum Sections 
+    {
+        GENERAL=0,
+        METADATA,
+        DIFFICULTY,
+        EVENTS,
+        TIMING_POINTS,
+        HIT_OBJECTS
+    };
+
+    struct Timing
+    {
+        int time; 
+        float beatLength; 
+        int meter; 
+        int sampleSet;
+        int sampleIndex;
+        // skip the uninherited
+        int volume;
+        int effects;
+    };
+
+    int m_beatmapID=-1;
+    std::string m_difficultyName;
+    std::string m_beatmapPath;
+    std::string m_beatmapFile;
+
+    // General
+    int m_section=-1;
+    std::string m_audioFilename="";
+    int m_audioLeadIn;
+    int m_previewTime;
+    int m_countDown;
+    int m_mode;
+    std::string m_sampleSet="Normal"; // Normal Soft Drum
+    int m_specialStyle;
+
+    // Metadata
+    std::string m_title;
+    std::string m_artist;
+    std::string m_creator;
+    std::string m_version;
+
+    // Difficulty
+    int m_totalColumns=0;
+    float m_OD=10;
+
+    // Event
+    std::shared_ptr<ALLEGRO_BITMAP> backgroudImage;
+
+    // Timing Points
+    std::list<Timing> m_timingList;
+    std::list<Timing>::const_iterator m_timingIter;
+
+    // Node
+    std::list<std::string> m_nodeList;
+    std::list<std::string>::const_iterator m_nodeIter;
+
+    void Parse(const std::string& str);
+};

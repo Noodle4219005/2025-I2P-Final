@@ -1,8 +1,12 @@
 #pragma once
 #include "SkinImage.h"
+#include <vector>
 
-class Skin : public SkinImage, public SkinConfig
+class Skin 
 {
+public:
+    void DrawHold(int start, int end) const;
+    void Draw(int start, int end) const;
 private:
     int m_keys;
     int m_columnStart=136;

@@ -1,6 +1,7 @@
+#include "BeatmapParser.h"
 #include "Objects/Node.h"
-#include "Engine/ImageHelper.h"
 #include "Engine/LOG.hpp"
+#include "util/GameData.h"
 
 #include <string>
 #include <fstream>
@@ -9,81 +10,14 @@
 #include <allegro5/bitmap.h>
 #include <filesystem> 
 
-class BeatmapParser
-{
-public:
-    BeatmapParser(const int& beatmapID, const std::string& difficultyName);
-    std::string GetAudioFilePath();
-    int GetPreviewTime();
-    int GetCountDown();
-    Node GetNextNode();
-    void UpdateEvent(int musicPosition);
-
-private:
-    enum Sections 
-    {
-        GENERAL=0,
-        METADATA,
-        DIFFICULTY,
-        EVENTS,
-        TIMING_POINTS,
-        HIT_OBJECTS
-    };
-
-    struct Timing
-    {
-        int time; 
-        float beatLength; 
-        int meter; 
-        int sampleSet;
-        int sampleIndex;
-        // skip the uninherited
-        int volume;
-        int effects;
-    };
-
-    int m_beatmapID=-1;
-    int difficulty=-1;
-    std::string m_beatmapPath;
-
-    // General
-    int m_section=-1;
-    std::string m_audioFilename;
-    int m_audioLeadIn;
-    int m_previewTime;
-    int m_countDown;
-    int m_mode;
-    std::string m_sampleSet="Normal"; // Normal Soft Drum
-    int m_specialStyle;
-
-    // Metadata
-    std::string m_title;
-    std::string m_artist;
-    std::string m_creator;
-    std::string m_version;
-
-    // Difficulty
-    int m_totalColumns=0;
-    float m_OD=10;
-
-    // Event
-    std::shared_ptr<ALLEGRO_BITMAP> backgroudImage;
-
-    // Timing Points
-    std::list<Timing> m_timingList;
-
-    // Node
-    std::list<std::string > m_nodeList;
-
-    void Parse(const std::string& str);
-};
-
 BeatmapParser::BeatmapParser(const int& beatmapID, const std::string& difficultyName) 
 {
     std::ifstream beatmapFileStream;
     std::stringstream intSS;
     std::string token;
     std::filesystem::path root;
+
+    if (m_beatmapID==beatmapID && m_difficultyName==difficultyName) return;
 
     root="./Map";
     try {
@@ -107,21 +41,22 @@ BeatmapParser::BeatmapParser(const int& beatmapID, const std::string& difficulty
     for (auto const& entry : std::filesystem::recursive_directory_iterator(m_beatmapPath)) {
         if (entry.is_regular_file() && entry.path().extension()==".osu") {
             std::stringstream ss(entry.path().filename().string());
-            std::string nowDifficulty;
-            getline(ss, nowDifficulty, '[');
-            getline(ss, nowDifficulty, ']');
-            if (nowDifficulty==difficultyName) {
-                m_beatmapPath="./Map/"+entry.path().filename().string();
+            getline(ss, m_difficultyName, '[');
+            getline(ss, m_difficultyName, ']');
+            if (m_difficultyName==difficultyName) {
+                m_beatmapFile=entry.path().filename().string();
                 break;
             }
         }
     }
 
-    beatmapFileStream.open("./Map/"+m_beatmapPath);
+    beatmapFileStream.open(m_beatmapPath+'/'+m_beatmapFile);
     while (getline(beatmapFileStream, token)) {
         // If commented, then skip this line.
+        if (token.empty()) continue;
         while (token.front()==' ') token=token.substr(1, token.size()-1);
         if (token[0]=='/'&&token[1]=='/') continue;
+        std::cout<<token<<std::endl;
 
         if (token=="[General]") {
             m_section=GENERAL;
@@ -151,6 +86,14 @@ BeatmapParser::BeatmapParser(const int& beatmapID, const std::string& difficulty
             Parse(token);
         }
     }
+    m_timingIter=m_timingList.begin();
+    m_nodeIter=m_nodeList.begin();
+}
+
+void BeatmapParser::Restart() 
+{
+    m_timingIter=m_timingList.begin();
+    m_nodeIter=m_nodeList.begin();
 }
 
 void BeatmapParser::Parse(const std::string& str) 
@@ -169,7 +112,7 @@ void BeatmapParser::Parse(const std::string& str)
             m_audioFilename=value;
         }
         else if (token=="AudioLeadIn") {
-            m_audioFilename=value;
+            m_audioLeadIn=stoi(value);
         }
         else if (token=="PreviewTime") {
             m_previewTime=stoi(value);
@@ -208,6 +151,7 @@ void BeatmapParser::Parse(const std::string& str)
         } 
         else if (token=="OverallDifficulty") {
             m_OD=stof(value);
+            game_data::OD=m_OD;
         }
     }
     else if (m_section==EVENTS) {
@@ -243,13 +187,43 @@ void BeatmapParser::Parse(const std::string& str)
         m_timingList.push_back({time, beatLength, meter, sampleSet, sampleIndex, volume, effects});
     }
     else if (m_section==HIT_OBJECTS) {
-        m_nodeList.push_back(token);
+        m_nodeList.push_back(str);
     }
 }
- 
-Node BeatmapParser::GetNextNode()
-{
 
+bool BeatmapParser::IsMapEnded() 
+{
+    return m_nodeIter==m_nodeList.end();
+}
+
+HitObject BeatmapParser::GetNextHitObject()
+{
+    std::stringstream hitObjectTokenSS(*m_nodeIter);
+    std::string token;
+    int x, time, type;
+    int endtime=-1;
+    int hitSound; // from 0 to 3, normal, whistle, finish, clap
+    std::cout<<"read: "<<*m_nodeIter<<std::endl;
+    ++m_nodeIter;
+
+    // the magic number is from ppy osu file format
+    // https://osu.ppy.sh/wiki/en/Client/File_formats/osu_%28file_format%29#holds-(osu!mania-only)
+    getline(hitObjectTokenSS, token, ',');
+    x=floor(stoi(token) * m_totalColumns / 512);
+    getline(hitObjectTokenSS, token, ',');
+    getline(hitObjectTokenSS, token, ',');
+    time=stoi(token);
+    getline(hitObjectTokenSS, token, ',');
+    type=stoi(token);
+    getline(hitObjectTokenSS, token, ',');
+    hitSound=stoi(token);
+    if (type==128) {
+        getline(hitObjectTokenSS, token, ',');
+        endtime=stoi(token);
+    }
+
+    if (endtime>=0) return HitObject(x, time, type, "res/skin/normal-hitnormal.wav");
+    return HitObject(x, time, type, endtime,"res/skin/normal-hitnormal.wav");
 }
 
 void BeatmapParser::UpdateEvent(int musicPosition) 
@@ -258,5 +232,10 @@ void BeatmapParser::UpdateEvent(int musicPosition)
 
 std::string BeatmapParser::GetAudioFilePath()
 {
-    return m_beatmapPath+m_audioFilename;
+    return m_beatmapPath+'/'+m_audioFilename;
+}
+
+int BeatmapParser::GetTotalColumns()
+{
+    return m_totalColumns;
 }

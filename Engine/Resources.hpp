@@ -14,12 +14,7 @@ namespace Engine {
     /// </summary>
     class Resources final {
     private:
-        // The path prefix for loading bitmaps.
-        static const std::string bitmapPathPrefix;
-        // The path prefix for loading fonts.
         static const std::string fontPathPrefix;
-        // The path prefix for loading samples.
-        static const std::string samplePathPrefix;
         // All bitmaps are stored in hash table for easy access and management.
         // Note: std::shared_ptr is a kind of smart pointer.
         //       To put it simple, it's a pointer that will delete itself when no one has reference to it.
@@ -64,7 +59,7 @@ namespace Engine {
         /// </summary>
         /// <param name="name">The filename of the image. (Including extension)</param>
         /// <returns>The smart pointer of the bitmap.</returns>
-        std::shared_ptr<ALLEGRO_BITMAP> GetBitmap(std::string name);
+        std::shared_ptr<ALLEGRO_BITMAP> GetBitmap(std::string bitmapPath);
         /// <summary>
         /// Get bitmap pointer by name, and resize it. The file should be put under "resources/images/".
         /// </summary>
@@ -72,7 +67,7 @@ namespace Engine {
         /// <param name="width">The target width that we want the image to be resized to.</param>
         /// <param name="height">The target height that we want the image to be resized to.</param>
         /// <returns>The smart pointer of the bitmap.</returns>
-        std::shared_ptr<ALLEGRO_BITMAP> GetBitmap(std::string name, int width, int height);
+        std::shared_ptr<ALLEGRO_BITMAP> GetBitmap(std::string bitmapPath, int width, int height);
         /// <summary>
         /// Get font pointer by name. The file should be put under "resources/fonts/".
         /// </summary>
@@ -85,13 +80,13 @@ namespace Engine {
         /// </summary>
         /// <param name="name">The filename of the audio. (Including extension)</param>
         /// <returns>The smart pointer of the sample.</returns>
-        std::shared_ptr<ALLEGRO_SAMPLE> GetSample(std::string name);
+        std::shared_ptr<ALLEGRO_SAMPLE> GetSample(std::string samplePath);
         /// <summary>
         /// Get sample instance pointer by name. The file should be put under "resources/audios".
         /// </summary>
         /// <param name="name">The filename of the audio. (Including extension)</param>
         /// <returns>The smart pointer of the sample instance.</returns>
-        std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> GetSampleInstance(std::string name);
+        std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> GetSampleInstance(std::string samplePath);
         /// <summary>
         /// Typical function to retrieve Singleton instance and supports lazy initialization.
         /// </summary>

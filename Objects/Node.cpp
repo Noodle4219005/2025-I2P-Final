@@ -1,24 +1,33 @@
+#include "Node.h"
 #include "Skin/Skin.h"
 #include "UI/Component/Image.hpp"
 #include "util/GameData.h"
+#include "util/ErrorCalculator.h"
 
-class Node : public Engine::Image, protected Skin
+void Node::KeyDown(int position) 
 {
-private:
-    m_perfectHitPosition;
-public:
-    Node(int column, int position)
-    {
+    if (GetHitValue(m_perfectHitPosition) != NONE && m_isFirstKeyDown) {
+        m_isFirstKeyDown=false;
+        m_isKeyDown=true;
+        m_firstKeyPosition=position;
     }
-
-    void Draw() const;
-};
-
-void Update() 
-{
-    if ()
 }
 
-void Draw() const 
+void Node::KeyUp() 
 {
+
+}
+
+void Node::Update() 
+{
+    if (isKeyDown)
+}
+
+void Node::Draw() const 
+{
+}
+
+void Node::GetColumn() const
+{
+    return m_column;
 }

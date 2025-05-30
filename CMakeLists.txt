@@ -6,8 +6,6 @@ set(CMAKE_CXX_STANDARD 20)
 include_directories(.)
 include_directories("Map")
 include_directories("res")
-include_directories("res/skin")
-include_directories("res/fonts")
 
 file(COPY "res" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY "Map" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -38,7 +36,7 @@ add_executable(2025_I2P2_Final
     Engine/Resources.hpp
     Engine/Sprite.cpp
     Engine/Sprite.hpp
-    "Engine/ImageHelper.cpp" 
+     
     
     "Scene/Game.cpp" 
     "Scene/Game.h"
@@ -64,11 +62,13 @@ add_executable(2025_I2P2_Final
 
     "util/GameData.h"
     "util/GameData.cpp"
-    "Render/HUD.cpp" 
+    "UI/HUD.cpp" 
     "Objects/Hold.cpp"
+    "Objects/Node.h"
+    "Objects/Hold.h"
 
     main.cpp
- "Objects/Node.h" "Objects/Hold.h" "Skin/SkinAudio.h" "Skin/SkinAudio.cpp" "Engine/ImageHelper.h" "util/Constants.h" "Skin/DummySkin.cpp" "util/ErrorCalculator.h" "util/ErrorCalculator.cpp")
+   "Skin/SkinAudio.h" "Skin/SkinAudio.cpp" "Skin/DummySkin.cpp" "util/ErrorCalculator.h" "util/ErrorCalculator.cpp" "util/Constant.h" "UI/HUD.h" "Objects/HitObject.h" "Objects/HitObject.cpp")
 
 find_package(allegro CONFIG REQUIRED)
 target_link_libraries(2025_I2P2_Final Allegro::allegro Allegro::allegro_main Allegro::allegro_font Allegro::allegro_dialog 

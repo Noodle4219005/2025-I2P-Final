@@ -12,9 +12,7 @@
 // #include "Resources.hpp"
 
 namespace Engine {
-    const std::string Resources::bitmapPathPrefix = "Resource/images/";
-    const std::string Resources::fontPathPrefix = "Resource/fonts/";
-    const std::string Resources::samplePathPrefix = "Resource/audios/";
+    const std::string Resources::fontPathPrefix = "res/fonts/";
     Resources::Resources() = default;
     Resources::~Resources() {
         try {
@@ -54,21 +52,22 @@ namespace Engine {
         }
     }
 
-    std::shared_ptr<ALLEGRO_BITMAP> Resources::GetBitmap(std::string name) {
-        if (bitmaps.count(name) != 0)
-            return bitmaps[name];
-        std::string bitmapPath = bitmapPathPrefix + name;
+    std::shared_ptr<ALLEGRO_BITMAP> Resources::GetBitmap(std::string bitmapPath) 
+    {
+        if (bitmaps.count(bitmapPath) != 0)
+            return bitmaps[bitmapPath];
         ALLEGRO_BITMAP *bmp = al_load_bitmap(bitmapPath.c_str());
         if (!bmp) throw Allegro5Exception(("failed to load image: " + bitmapPath).c_str());
         LOG(INFO) << "Loaded Resource<image>: " << bitmapPath;
-        bitmaps[name] = std::shared_ptr<ALLEGRO_BITMAP>(bmp, al_destroy_bitmap);
-        return bitmaps[name];
+        bitmaps[bitmapPath] = std::shared_ptr<ALLEGRO_BITMAP>(bmp, al_destroy_bitmap);
+        return bitmaps[bitmapPath];
     }
-    std::shared_ptr<ALLEGRO_BITMAP> Resources::GetBitmap(std::string name, int width, int height) {
-        std::string idx = name + '?' + std::to_string(width) + 'x' + std::to_string(height);
+
+    std::shared_ptr<ALLEGRO_BITMAP> Resources::GetBitmap(std::string bitmapPath, int width, int height) 
+    {
+        std::string idx = bitmapPath + '?' + std::to_string(width) + 'x' + std::to_string(height);
         if (bitmaps.count(idx) != 0)
             return bitmaps[idx];
-        std::string bitmapPath = bitmapPathPrefix + name;
         ALLEGRO_BITMAP *bmp = al_load_bitmap(bitmapPath.c_str());
         if (!bmp) throw Allegro5Exception(("failed to load image: " + bitmapPath).c_str());
 
@@ -87,7 +86,9 @@ namespace Engine {
         bitmaps[idx] = std::shared_ptr<ALLEGRO_BITMAP>(resized_bmp, al_destroy_bitmap);
         return bitmaps[idx];
     }
-    std::shared_ptr<ALLEGRO_FONT> Resources::GetFont(std::string name, int fontSize) {
+
+    std::shared_ptr<ALLEGRO_FONT> Resources::GetFont(std::string name, int fontSize) 
+    {
         std::string idx = name + '?' + std::to_string(fontSize);
         if (fonts.count(idx) != 0)
             return fonts[idx];
@@ -99,28 +100,31 @@ namespace Engine {
         fonts[idx] = std::shared_ptr<ALLEGRO_FONT>(font, al_destroy_font);
         return fonts[idx];
     }
-    std::shared_ptr<ALLEGRO_SAMPLE> Resources::GetSample(std::string name) {
-        if (samples.count(name) != 0)
-            return samples[name];
-        std::string samplePath = samplePathPrefix + name;
+
+    std::shared_ptr<ALLEGRO_SAMPLE> Resources::GetSample(std::string samplePath) 
+    {
+        if (samples.count(samplePath) != 0)
+            return samples[samplePath];
         ALLEGRO_SAMPLE *sample = al_load_sample(samplePath.c_str());
         if (!sample)
             throw Allegro5Exception(("failed to load audio: " + samplePath).c_str());
         LOG(INFO) << "Loaded Resource<audio>: " << samplePath;
-        samples[name] = std::shared_ptr<ALLEGRO_SAMPLE>(sample, al_destroy_sample);
-        return samples[name];
+        samples[samplePath] = std::shared_ptr<ALLEGRO_SAMPLE>(sample, al_destroy_sample);
+        return samples[samplePath];
     }
-    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> Resources::GetSampleInstance(std::string name) {
-        std::shared_ptr<ALLEGRO_SAMPLE> sample = GetSample(name);
+
+    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> Resources::GetSampleInstance(std::string samplePath) 
+    {
+        std::shared_ptr<ALLEGRO_SAMPLE> sample = GetSample(samplePath);
         ALLEGRO_SAMPLE_INSTANCE *sample_instance = al_create_sample_instance(sample.get());
-        std::string samplePath = samplePathPrefix + name;
         if (!sample_instance)
             throw Allegro5Exception(("failed to create sample instance: " + samplePath).c_str());
         LOG(INFO) << "Created<sample_instance>: " << samplePath;
         std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> ptr = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>(sample_instance, al_destroy_sample_instance);
-        sample_instance_pairs[name] = std::make_pair(ptr, sample);
+        sample_instance_pairs[samplePath] = std::make_pair(ptr, sample);
         return ptr;
     }
+
     Resources &Resources::GetInstance() {
         // The classic way to lazy initialize a Singleton.
         static Resources instance;

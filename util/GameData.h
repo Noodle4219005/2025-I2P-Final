@@ -20,15 +20,17 @@ namespace game_data
     extern int hit50;
     extern int miss;
     extern float accuracy;
-    extern long long gamePosition=0;
+    extern long long gamePosition;
     extern long long score;
 
-    extern int nowGameState=LOADING;
+    extern int nowGameState;
 
     void Refresh();
 
     extern long long mapID;
     extern std::string difficultyName; // which difficulty
-    extern int starRate;
+    extern float starRate;
+    extern float OD;
+    extern float speed;
 }
 
