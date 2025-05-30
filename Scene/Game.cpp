@@ -4,6 +4,7 @@
 #include "Engine/AudioHelper.hpp"
 #include "Beatmap/BeatmapParser.h"
 #include "util/GameData.h"
+#include "util/Constant.h"
 #include "UI/HUD.h"
 
 #include <algorithm>
@@ -27,26 +28,50 @@ void Game::Initialize()
 
 void Game::Terminate()
 {
+    m_beatmap.release();
 }
 
 void Game::OnKeyDown(int keyCode)  
 {
-    m_beatmap.release();
+    if (m_beatmap->GetTotalColumns()==4) {
+        if (keyCode==constant::key4k1 && activeObjectLists[0].size()) {
+            activeObjectLists[0].front().OnKeyDown();
+        }
+    }
+}
+
+void Game::OnKeyUp(int keyCode)  
+{
 }
 
 void Game::Update(float deltaTime)
 {
     game_data::gamePosition=AudioHelper::GetSamplePosition(music);
     if (game_data::nowGameState==game_data::PAUSE) AudioHelper::StopSample(music);
-    while (m_nextHitObject.GetStartTime()<game_data::gamePosition) {
+    while (m_nextHitObject.GetStartTime()<game_data::gamePosition+game_data::GetScrollMilisecond(240)) {
         activeObjectLists[m_nextHitObject.GetColumn()].push_back(m_nextHitObject);
         if (!m_beatmap->IsMapEnded()) m_nextHitObject=m_beatmap->GetNextHitObject();
+    }
+    for (int i=0; i<activeObjectLists.size(); ++i) {
+        if (activeObjectLists[i].empty()) continue;
+        activeObjectLists[i].front().Update();
+        if (!activeObjectLists[i].front().IsAlive()) {
+            activeObjectLists[i].pop_front();
+        }
     }
 }
 
 void Game::Draw() const
 {
+    al_clear_to_color(al_map_rgb(0, 0, 0));
     if (game_data::nowGameState==game_data::LOADING) return;
     if (game_data::nowGameState==game_data::PAUSE) return;
-}
 
+    for (auto objectList : activeObjectLists) {
+        std::cout<<objectList.size()<<" ";
+        for (auto hitObject : objectList) {
+            hitObject.Draw();
+        }
+    }
+    std::cout<<"\n";
+}

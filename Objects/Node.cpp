@@ -4,30 +4,23 @@
 #include "util/GameData.h"
 #include "util/ErrorCalculator.h"
 
-void Node::KeyDown(int position) 
+void Node::OnKeyDown() 
 {
     if (GetHitValue(m_perfectHitPosition) != NONE && m_isFirstKeyDown) {
         m_isFirstKeyDown=false;
         m_isKeyDown=true;
-        m_firstKeyPosition=position;
+        m_firstKeyPosition=game_data::gamePosition;
     }
 }
 
-void Node::KeyUp() 
+void Node::OnKeyUp() 
 {
-
 }
 
 void Node::Update() 
 {
-    if (isKeyDown)
 }
 
 void Node::Draw() const 
 {
-}
-
-void Node::GetColumn() const
-{
-    return m_column;
 }

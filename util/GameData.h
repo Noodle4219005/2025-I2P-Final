@@ -32,5 +32,8 @@ namespace game_data
     extern float starRate;
     extern float OD;
     extern float speed;
+    extern float scrollSpeed;
+
+    float GetScrollMilisecond(int hitPosition);
 }
 

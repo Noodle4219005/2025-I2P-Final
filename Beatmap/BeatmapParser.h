@@ -17,6 +17,7 @@ public:
     int GetPreviewTime();
     int GetCountDown();
     int GetTotalColumns();
+    float GetBPM();
     HitObject GetNextHitObject();
     void UpdateEvent(int musicPosition);
     bool IsMapEnded();

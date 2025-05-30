@@ -1,4 +1,5 @@
 #include "BeatmapParser.h"
+#include "Objects/Hold.h"
 #include "Objects/Node.h"
 #include "Engine/LOG.hpp"
 #include "util/GameData.h"
@@ -238,4 +239,9 @@ std::string BeatmapParser::GetAudioFilePath()
 int BeatmapParser::GetTotalColumns()
 {
     return m_totalColumns;
+}
+
+float BeatmapParser::GetBPM() 
+{
+    return 1 / 315 * 1000 * 60;
 }

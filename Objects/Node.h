@@ -4,17 +4,15 @@
 #include "util/GameData.h":
 #include "HitObject.h"
 
-class Node
+class Node : public HitObject
 {
 public:
-    void Draw() const;
-    void KeyDown();
-    void Update();
+    Node(int x, int time, int type, const std::string& hitSoundPath) :
+        HitObject(x, time, type, hitSoundPath) { ; }
+    void OnKeyDown() override;
+    void OnKeyUp() override;
+    void Update() override;
+    void Draw() const override;
 
 private:
-    int m_perfectHitPosition=0;
-    bool m_isKeyDown=false;
-    bool m_isFirstKeyDown=true;
-    int m_firstKeyPosition=0;
-    int m_column=-1;
 };

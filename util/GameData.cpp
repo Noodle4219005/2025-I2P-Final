@@ -22,6 +22,7 @@ namespace game_data
     float starRate=0;
     float OD=0;
     float speed=1;
+    float scrollSpeed=20;
 
     void Refresh() 
     {
@@ -31,5 +32,9 @@ namespace game_data
         OD=0;
         accuracy=100.f;
         nowGameState=LOADING;
+    }
+
+    float GetScrollMilisecond(int hitPosition) {
+        return (6860 + 6860 * (hitPosition/480)) / scrollSpeed;
     }
 }

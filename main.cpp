@@ -4,6 +4,7 @@
 #include "Engine/GameEngine.hpp"
 #include "Engine/LOG.hpp"
 #include "Scene/Game.h"
+#include "util/Constant.h"
 
 int main(int argc, char** argv) {
   Engine::LOG::SetConfig(true);
@@ -11,6 +12,6 @@ int main(int argc, char** argv) {
 
   game.AddNewScene("game", new Game());
 
-  game.Start("game", 60, 1600, 832);
+  game.Start("game", constant::kFPS, constant::kScreenW, constant::kScreenH);
   return 0;
 }

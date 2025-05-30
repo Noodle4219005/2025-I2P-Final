@@ -3,6 +3,7 @@
 #include "Beatmap/BeatmapParser.h"
 
 #include <allegro5/allegro_audio.h>
+#include <vector>
 
 class Game : public Engine::IScene
 {
@@ -10,9 +11,11 @@ public:
     Game() { ; }
     void Initialize() override;
     void OnKeyDown(int keyCode) override;
+    void OnKeyUp(int keyCode) override;
     void Update(float deltaTime) override;
     void Draw() const override;
     void Terminate() override;
+    void GetHitObject();
 
 private:
     float m_musicBarX;
