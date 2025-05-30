@@ -1,0 +1,6 @@
+{
+  "dependencies": [
+    "allegro5",
+    "glfw3"
+  ]
+}
