@@ -17,9 +17,10 @@ public:
     int GetPreviewTime();
     int GetCountDown();
     int GetTotalColumns();
-    float GetBPM();
+    float GetBPM(float beatLength);
+    float GetSpeedScale();
     HitObject GetNextHitObject();
-    void UpdateEvent(int musicPosition);
+    void UpdateTiming(int musicPosition);
     bool IsMapEnded();
 
 private:
@@ -40,8 +41,8 @@ private:
         int meter; 
         int sampleSet;
         int sampleIndex;
-        // skip the uninherited
-        int volume;
+        int volume; // percentage
+        bool uninherited;
         int effects;
     };
 
@@ -76,6 +77,10 @@ private:
     // Timing Points
     std::list<Timing> m_timingList;
     std::list<Timing>::const_iterator m_timingIter;
+    float m_baseBPM=-1;
+    float m_bpmMultipliler=1.;
+    int m_sampleIndex=0;
+    float m_volume=1.;
 
     // Node
     std::list<std::string> m_nodeList;

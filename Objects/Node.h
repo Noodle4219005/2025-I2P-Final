@@ -9,10 +9,10 @@ class Node : public HitObject
 public:
     Node(int x, int time, int type, const std::string& hitSoundPath) :
         HitObject(x, time, type, hitSoundPath) { ; }
-    void OnKeyDown() override;
-    void OnKeyUp() override;
-    void Update() override;
-    void Draw() const override;
+    //void OnKeyDown() override;
+    //void OnKeyUp() override;
+    //void Update() override;
+    //void Draw() const override;
 
 private:
 };

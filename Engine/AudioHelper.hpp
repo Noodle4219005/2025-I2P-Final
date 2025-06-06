@@ -19,6 +19,7 @@ public:
     static void StopSample(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance);
     static void ChangeSampleVolume(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, float volume);
     static void ChangeSamplePosition(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, float position);
+    static void ChangeSampleSpeed(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, float speed);
     static unsigned int GetSampleLength(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance);
     static unsigned int GetSamplePosition(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance);
 };

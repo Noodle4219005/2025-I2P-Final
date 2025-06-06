@@ -18,12 +18,8 @@ public:
     void GetHitObject();
 
 private:
-    float m_musicBarX;
-    float m_musicBarY;
-    float m_musicBarWidth;
-    float m_musicBarHeight;
     HitObject m_nextHitObject;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> music;
     std::unique_ptr<BeatmapParser> m_beatmap;
-    std::vector<std::list<HitObject>> activeObjectLists;
+    std::vector<std::list<HitObject>> m_activeObjectLists; // the object which is now need to be processed
 };

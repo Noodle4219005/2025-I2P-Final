@@ -23,17 +23,32 @@ int HitObject::GetColumn()
 
 void HitObject::Update() 
 {
-    if (game_data::gamePosition > m_time && GetHitValue(m_perfectHitPosition) == NONE) {
+    // TODO: isAvailable and isAlive
+    if (game_data::gamePosition>m_time && GetHitValue(NONE)) {
+        m_isAvailable=0;
+    }
+    if (!m_isAvailable && GetPositionY()>constant::kScreenH) {
         m_isAlive=0;
     }
 }
 
-void HitObject::Draw() const
+float HitObject::GetPositionY() const
 {
-    float y=(game_data::gamePosition-m_time)/game_data::GetScrollMilisecond(240)*constant::kScreenH+constant::kScreenH-240;
-    al_draw_filled_circle((m_column+1)*256, y, 60, al_map_rgb(0, 255, 255));
+    return (game_data::gamePosition-m_time)/game_data::GetScrollMilisecond()*constant::kScreenH+game_data::hitPosition*constant::kPixelScale;
 }
 
-bool HitObject::IsAlive() {
+void HitObject::Draw() const
+{
+    int a=(m_isAvailable)?255:100;
+    al_draw_filled_rectangle((m_column+1)*256, GetPositionY(), (m_column+2)*256, GetPositionY()-50, al_map_rgba(0, 255, 255, a));
+}
+
+bool HitObject::IsAlive() const
+{
     return m_isAlive;
+}
+
+bool HitObject::IsAvailable() const
+{
+    return m_isAvailable;
 }

@@ -44,12 +44,12 @@ add_executable(2025_I2P2_Final
     "Beatmap/BeatmapParser.h" 
     "Beatmap/BeatmapParser.cpp" 
 
-    "Skin/SkinBuilder.cpp" 
+     
     "Skin/Skin.cpp" 
     "Skin/Skin.h" 
-    "Skin/SkinImage.cpp" 
-    "Skin/SkinImage.h" 
-    "Skin/SkinConfig.h" 
+     
+     
+     
 
     UI/Component/Image.cpp
     UI/Component/Image.hpp
@@ -68,7 +68,7 @@ add_executable(2025_I2P2_Final
     "Objects/Hold.h"
 
     main.cpp
-   "Skin/SkinAudio.h" "Skin/SkinAudio.cpp" "Skin/DummySkin.cpp" "util/ErrorCalculator.h" "util/ErrorCalculator.cpp" "util/Constant.h" "UI/HUD.h" "Objects/HitObject.h" "Objects/HitObject.cpp" "util/Constant.cpp")
+     "Skin/DummySkin.cpp" "util/ErrorCalculator.h" "util/ErrorCalculator.cpp" "util/Constant.h" "UI/HUD.h" "Objects/HitObject.h" "Objects/HitObject.cpp" "util/Constant.cpp" "util/DifficultyCalculator.h" "util/DifficultyCalculator.cpp" "Scene/Menu.cpp" "Scene/RankingPanel.cpp" "Scene/Start.cpp")
 
 find_package(allegro CONFIG REQUIRED)
 target_link_libraries(2025_I2P2_Final Allegro::allegro Allegro::allegro_main Allegro::allegro_font Allegro::allegro_dialog 

@@ -33,7 +33,9 @@ namespace game_data
     extern float OD;
     extern float speed;
     extern float scrollSpeed;
+    extern float scrollSpeedMultiplexer;
+    extern float hitPosition;
 
-    float GetScrollMilisecond(int hitPosition);
+    float GetScrollMilisecond();
 }
 

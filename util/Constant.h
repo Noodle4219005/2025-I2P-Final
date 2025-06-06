@@ -1,14 +1,12 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 #include <allegro5/keycodes.h>
 
 namespace constant
 {
-    extern int key4k1;
-    extern int key4k2;
-    extern int key4k3;
-    extern int key4k4;
+    extern std::unordered_map<std::string, int> keyMap;
 
     extern const std::string kSkinPath;
 
@@ -19,6 +17,8 @@ namespace constant
     extern const int kGameMaxPixelX;
     extern const int kGameMaxPixelY;
 
-    extern const float pixelScale;
-    extern const int offsetX;
+    extern const float kPixelScale;
+    extern const int kOffsetX;
+
+    extern const int kSkipTimeThreshold; // ms
 }

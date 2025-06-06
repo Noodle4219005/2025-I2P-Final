@@ -5,6 +5,12 @@
 #include <sstream>
 
 // Watch out, the bitmap bottom hit the line is the zero point.
+
+Skin& Skin::GetInstance()
+{
+    static Skin instance{};
+    return instance;
+}
  
 Skin::Skin() 
 {
@@ -78,9 +84,22 @@ void Skin::Parse(const std::string& str)
             m_nkManiaSkin[m_keys];
         }
         else if (token=="ColumnStart") {
-            m_nkManiaSkin[m_keys].columnStart=stoi(value);
+            m_nkManiaSkin[m_keys].columnStart=stof(value);
         }
         else if (token=="ColumnRight") {
+            m_nkManiaSkin[m_keys].columnRight=stof(value);
+        }
+        else if (token=="ColumnSpacing") {
+            m_nkManiaSkin[m_keys].columnSpacing=stof(value);
+        }
+        else if (token=="ColumnWidth") {
+            m_nkManiaSkin[m_keys].columnWidth=stof(value);
+        }
+        else if (token=="ColumnLineWidth") {
+            m_nkManiaSkin[m_keys].columnLineWidth=stof(value);
+        }
+        else if (token=="BarlineHeight") {
+            m_nkManiaSkin[m_keys].barLineHeight=stof(value);
         }
     }
 }

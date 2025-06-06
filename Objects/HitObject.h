@@ -10,7 +10,9 @@ public:
     HitObject()=default;
     int GetStartTime();
     int GetColumn();
-    bool IsAlive();
+    float GetPositionY() const;
+    bool IsAlive() const;
+    bool IsAvailable() const;
     void virtual OnKeyDown() { ; }
     void virtual OnKeyUp() { ; }
     void virtual Update();
@@ -27,4 +29,5 @@ protected:
     bool m_isFirstKeyDown=true;
     int m_firstKeyPosition=0;
     bool m_isAlive=true;
+    bool m_isAvailable=true;
 };

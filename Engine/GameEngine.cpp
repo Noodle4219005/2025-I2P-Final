@@ -163,9 +163,6 @@ namespace Engine {
             changeScene(nextScene);
             nextScene = "";
         }
-        // Force lag to avoid bullet-through-paper issue.
-        if (deltaTime >= deltaTimeThreshold)
-            deltaTime = deltaTimeThreshold;
         activeScene->Update(deltaTime);
     }
     void GameEngine::draw() const {

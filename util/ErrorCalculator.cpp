@@ -10,22 +10,22 @@ int GetHitValue(int nodePerfectPosition)
     // the magic numbers are from the website of osu judgement
     // https://osu.ppy.sh/wiki/en/Gameplay/Judgement/osu%21mania
 
-    if (hiterror<16) {
+    if (hiterror <= 16) {
         return PERFECT;
     }
-    else if (hiterror<64 - 3*game_data::OD) {
+    else if (hiterror <= 64 - 3*game_data::OD) {
         return GREAT;
     }
-    else if (hiterror<97 - 3*game_data::OD) {
+    else if (hiterror <= 97 - 3*game_data::OD) {
         return GOOD;
     }
-    else if (hiterror<127 - 3*game_data::OD) {
+    else if (hiterror <= 127 - 3*game_data::OD) {
         return OK;
     }
-    else if (hiterror<151 - 3*game_data::OD) {
+    else if (hiterror <= 151 - 3*game_data::OD) {
         return MEH;
     }
-    else if (hiterror<188 - 3*game_data::OD) {
+    else if (hiterror <= 188 - 3*game_data::OD) {
         return MISS;
     }
     else {

@@ -160,9 +160,10 @@ void BeatmapParser::Parse(const std::string& str)
     else if (m_section==TIMING_POINTS) {
         std::istringstream iss(str);
         float beatLength;
-        int time, meter, volume;
+        int volume;
+        int time, meter;
         int sampleSet, sampleIndex;
-        int uninherited;
+        bool uninherited;
         int effects;
 
         getline(iss, token, ',');
@@ -182,10 +183,7 @@ void BeatmapParser::Parse(const std::string& str)
         getline(iss, token, ',');
         effects=stoi(token);
 
-        if (!uninherited) {
-            beatLength=m_timingList.rbegin()->beatLength*(1.f+0.01f*beatLength);
-        }
-        m_timingList.push_back({time, beatLength, meter, sampleSet, sampleIndex, volume, effects});
+        m_timingList.push_back({time, beatLength, meter, sampleSet, sampleIndex, volume, uninherited, effects});
     }
     else if (m_section==HIT_OBJECTS) {
         m_nodeList.push_back(str);
@@ -218,17 +216,45 @@ HitObject BeatmapParser::GetNextHitObject()
     type=stoi(token);
     getline(hitObjectTokenSS, token, ',');
     hitSound=stoi(token);
-    if (type==128) {
+    if (type&128) {
         getline(hitObjectTokenSS, token, ',');
         endtime=stoi(token);
     }
 
-    if (endtime>=0) return HitObject(x, time, type, "res/skin/normal-hitnormal.wav");
-    return HitObject(x, time, type, endtime,"res/skin/normal-hitnormal.wav");
+    if (endtime>=0) return Node(x, time, type, "res/skin/normal-hitnormal.wav");
+    return Hold(x, time, type, endtime,"res/skin/normal-hitnormal.wav");
 }
 
-void BeatmapParser::UpdateEvent(int musicPosition) 
+void BeatmapParser::UpdateTiming(int musicPosition) 
 {
+    while (m_timingIter!=m_timingList.end() && m_timingIter->time<=musicPosition) {
+        if (m_baseBPM==-1) m_baseBPM=GetBPM(m_timingIter->beatLength);
+        if (m_timingIter->uninherited) {
+            int bpm=GetBPM(m_timingIter->beatLength);
+            m_bpmMultipliler=bpm/m_baseBPM;
+        }
+        else {
+            m_bpmMultipliler=(-m_timingIter->beatLength)/100.;
+            std::cout<<"BPM Mul: "<<m_bpmMultipliler<<std::endl;
+        }
+        switch (m_timingIter->sampleSet)
+        {
+        case 1: 
+            m_sampleSet="Normal";
+            break;
+        case 2:
+            m_sampleSet="Soft";
+            break;
+        case 3:
+            m_sampleSet="Drum";
+            break;
+        default:
+            break;
+        }
+        m_sampleIndex=m_timingIter->sampleIndex;
+        m_volume=1.*m_timingIter->volume/100.;
+        m_timingIter=next(m_timingIter);
+    }
 }
 
 std::string BeatmapParser::GetAudioFilePath()
@@ -241,7 +267,12 @@ int BeatmapParser::GetTotalColumns()
     return m_totalColumns;
 }
 
-float BeatmapParser::GetBPM() 
+float BeatmapParser::GetBPM(float beatLength) 
 {
-    return 1 / 315 * 1000 * 60;
+    return 1 / beatLength * 1000 * 60;
+}
+
+float BeatmapParser::GetSpeedScale() 
+{
+    return m_bpmMultipliler;
 }

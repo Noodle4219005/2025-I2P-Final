@@ -17,12 +17,14 @@ namespace game_data
 
     int nowGameState=LOADING;
 
-    long long mapID=323493;
-    std::string difficultyName="Lv.10"; // which difficulty
+    long long mapID=622946;
+    std::string difficultyName="HD"; // which difficulty
     float starRate=0;
     float OD=0;
     float speed=1;
-    float scrollSpeed=20;
+    float scrollSpeed=15;
+    float scrollSpeedMultiplexer=1.;
+    float hitPosition=408; // from 240 to 480
 
     void Refresh() 
     {
@@ -34,7 +36,7 @@ namespace game_data
         nowGameState=LOADING;
     }
 
-    float GetScrollMilisecond(int hitPosition) {
-        return (6860 + 6860 * (hitPosition/480)) / scrollSpeed;
+    float GetScrollMilisecond() {
+        return (6860 + 6860 * (hitPosition/480)) / (scrollSpeed*scrollSpeedMultiplexer);
     }
 }

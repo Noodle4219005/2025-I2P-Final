@@ -2,11 +2,14 @@
 
 namespace constant 
 {
-
-    int key4k1=ALLEGRO_KEY_D;
-    int key4k2=ALLEGRO_KEY_F;
-    int key4k3=ALLEGRO_KEY_J;
-    int key4k4=ALLEGRO_KEY_K;
+    std::unordered_map<std::string, int> keyMap=
+    {
+        {"4k1", ALLEGRO_KEY_D},
+        {"4k2", ALLEGRO_KEY_F},
+        {"4k3", ALLEGRO_KEY_J},
+        {"4k4", ALLEGRO_KEY_K},
+        {"skip", ALLEGRO_KEY_SPACE}
+    };
 
     const std::string kSkinPath="./res/skin";
     
@@ -17,6 +20,8 @@ namespace constant
     const int kGameMaxPixelX=640;
     const int kGameMaxPixelY=480;
 
-    const float pixelScale=1.f*kScreenH/480;
-    const int offsetX=(kScreenW-pixelScale*kGameMaxPixelX)/2;
+    const float kPixelScale=1.f*kScreenH/480;
+    const int kOffsetX=(kScreenW-kPixelScale*kGameMaxPixelX)/2;
+
+    const int kSkipTimeThreshold=5000; // ms
 }
