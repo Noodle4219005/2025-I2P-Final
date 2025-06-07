@@ -18,8 +18,8 @@ public:
     void GetHitObject();
 
 private:
-    HitObject m_nextHitObject;
+    std::unique_ptr<HitObject> m_nextHitObject;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> music;
     std::unique_ptr<BeatmapParser> m_beatmap;
-    std::vector<std::list<HitObject>> m_activeObjectLists; // the object which is now need to be processed
+    std::vector<std::list<std::unique_ptr<HitObject>>> m_activeObjectLists; // the object which is now need to be processed
 };

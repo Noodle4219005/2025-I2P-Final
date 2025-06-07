@@ -24,4 +24,9 @@ namespace constant
     const int kOffsetX=(kScreenW-kPixelScale*kGameMaxPixelX)/2;
 
     const int kSkipTimeThreshold=5000; // ms
+
+    const int kBlockWidth=75;
+    const int kBlockHeight=20;
+    const int kHitlineThickness=5;
+    const int kBorderlineThickness=5;
 }

@@ -1,12 +1,23 @@
+#pragma once
+
 class HUD 
 {
 public:
-    void Init();
-    void Draw() const;
+    // Singleton
+    HUD(HUD const&)=delete;
+    void operator=(HUD const&)=delete;
+    static HUD& GetInstance();
+
+    void DrawForeground();
+    void DrawBackground();
 
 private:
-    float m_musicBarX;
-    float m_musicBarY;
-    float m_musicBarWidth;
-    float m_musicBarHeight;
+    HUD();
+    int screenMiddleX; 
+    int startX;
+    int playFieldWidth;
+    float musicBarX;
+    float musicBarY;
+    float musicBarWidth;
+    float musicBarHeight;
 };

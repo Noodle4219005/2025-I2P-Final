@@ -16,10 +16,12 @@ public:
     std::string GetAudioFilePath();
     int GetPreviewTime();
     int GetCountDown();
+    int GetTotalNotes();
     int GetTotalColumns();
     float GetBPM(float beatLength);
     float GetSpeedScale();
-    HitObject GetNextHitObject();
+    float GetStartPosition(float perfectHitPosition, float deltaTime);
+    std::unique_ptr<HitObject> GetNextHitObject();
     void UpdateTiming(int musicPosition);
     bool IsMapEnded();
 

@@ -3,6 +3,7 @@
 #include "Objects/Node.h"
 #include "Engine/LOG.hpp"
 #include "util/GameData.h"
+#include "util/Constant.h"
 
 #include <string>
 #include <fstream>
@@ -149,6 +150,7 @@ void BeatmapParser::Parse(const std::string& str)
     else if (m_section==DIFFICULTY) {
         if (token=="CircleSize") {
             m_totalColumns=stoi(value);
+            game_data::nkey=m_totalColumns;
         } 
         else if (token=="OverallDifficulty") {
             m_OD=stof(value);
@@ -195,7 +197,7 @@ bool BeatmapParser::IsMapEnded()
     return m_nodeIter==m_nodeList.end();
 }
 
-HitObject BeatmapParser::GetNextHitObject()
+std::unique_ptr<HitObject> BeatmapParser::GetNextHitObject()
 {
     std::stringstream hitObjectTokenSS(*m_nodeIter);
     std::string token;
@@ -221,8 +223,8 @@ HitObject BeatmapParser::GetNextHitObject()
         endtime=stoi(token);
     }
 
-    if (endtime>=0) return Node(x, time, type, "res/skin/normal-hitnormal.wav");
-    return Hold(x, time, type, endtime,"res/skin/normal-hitnormal.wav");
+    if (endtime<0) return std::make_unique<Node>(Node(x, time, type, GetStartPosition(time, game_data::GetScrollMilisecond()), "res/skin/normal-hitnormal.wav"));
+    return std::make_unique<Hold>(Hold(x, time, type, endtime, GetStartPosition(time, game_data::GetScrollMilisecond()), GetStartPosition(endtime, game_data::GetScrollMilisecond()+endtime-time), "res/skin/normal-hitnormal.wav"));
 }
 
 void BeatmapParser::UpdateTiming(int musicPosition) 
@@ -235,7 +237,6 @@ void BeatmapParser::UpdateTiming(int musicPosition)
         }
         else {
             m_bpmMultipliler=(-m_timingIter->beatLength)/100.;
-            std::cout<<"BPM Mul: "<<m_bpmMultipliler<<std::endl;
         }
         switch (m_timingIter->sampleSet)
         {
@@ -251,6 +252,7 @@ void BeatmapParser::UpdateTiming(int musicPosition)
         default:
             break;
         }
+        std::cout<<"BPM Mul: "<<m_bpmMultipliler<<std::endl;
         m_sampleIndex=m_timingIter->sampleIndex;
         m_volume=1.*m_timingIter->volume/100.;
         m_timingIter=next(m_timingIter);
@@ -275,4 +277,37 @@ float BeatmapParser::GetBPM(float beatLength)
 float BeatmapParser::GetSpeedScale() 
 {
     return m_bpmMultipliler;
+}
+
+float BeatmapParser::GetStartPosition(float perfectHitPosition, float deltaTime) 
+{
+    float ret=0;
+    float speed=constant::kScreenH/game_data::GetScrollMilisecond();
+    auto iter=m_timingIter;
+    std::vector<std::pair<float, float>> changingPoint; // position, speedMultiplexer
+    changingPoint.push_back({perfectHitPosition-deltaTime, game_data::scrollSpeedMultiplexer});
+    while (iter!=m_timingList.end() && iter->time<perfectHitPosition) {
+        if (iter->time>=changingPoint.back().first) {
+            changingPoint.push_back({iter->time, 0});
+        }
+        if (iter->uninherited) {
+            int bpm=GetBPM(iter->beatLength);
+            if (m_baseBPM==-1) changingPoint.back().second=1;
+            else changingPoint.back().second=bpm/m_baseBPM;
+        }
+        else {
+            changingPoint.back().second=-iter->beatLength/100;
+        }
+        iter=next(iter);
+    }
+    changingPoint.push_back({perfectHitPosition, 1});
+    for (int i=0; i<changingPoint.size()-1; ++i) {
+        ret+=(changingPoint[i+1].first-changingPoint[i].first)*changingPoint[i].second*speed;
+    }
+    // return 0;
+    return -ret+game_data::hitPosition*constant::kPixelScale;
+}
+int BeatmapParser::GetTotalNotes()
+{
+    return m_nodeList.size();
 }

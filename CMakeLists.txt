@@ -12,6 +12,11 @@ file(COPY "Map" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY allegro_monolith-5.2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(2025_I2P2_Final
+    # Beatmap
+    "Beatmap/BeatmapParser.h" 
+    "Beatmap/BeatmapParser.cpp" 
+
+    # Engine
     Engine/Allegro5Exception.cpp
     Engine/Allegro5Exception.hpp
     Engine/AudioHelper.cpp
@@ -36,21 +41,28 @@ add_executable(2025_I2P2_Final
     Engine/Resources.hpp
     Engine/Sprite.cpp
     Engine/Sprite.hpp
+
+    # Objects
+    "Objects/HitObject.h" 
+    "Objects/HitObject.cpp"
+    "Objects/Hold.h"
+    "Objects/Hold.cpp"
+    "Objects/Node.h"
+    "Objects/Node.cpp"
      
-    
+    # Scene
     "Scene/Game.cpp" 
     "Scene/Game.h"
+    "Scene/Menu.cpp" 
+    "Scene/RankingPanel.cpp" 
+    "Scene/Start.cpp"
 
-    "Beatmap/BeatmapParser.h" 
-    "Beatmap/BeatmapParser.cpp" 
-
-     
+    # Skin
+    "Skin/DummySkin.cpp" 
     "Skin/Skin.cpp" 
     "Skin/Skin.h" 
-     
-     
-     
 
+    # UI
     UI/Component/Image.cpp
     UI/Component/Image.hpp
     UI/Component/ImageButton.cpp
@@ -59,19 +71,29 @@ add_executable(2025_I2P2_Final
     UI/Component/Label.hpp
     UI/Component/Slider.cpp
     UI/Component/Slider.hpp
+    "UI/HUD.h" 
+    "UI/HUD.cpp" 
 
+    # util
     "util/GameData.h"
     "util/GameData.cpp"
-    "UI/HUD.cpp" 
-    "Objects/Hold.cpp"
-    "Objects/Node.h"
-    "Objects/Hold.h"
+    "util/ErrorCalculator.h" 
+    "util/ErrorCalculator.cpp" 
+    "util/Constant.h" 
+    "util/Constant.cpp" 
+    "util/DifficultyCalculator.h" 
+    "util/DifficultyCalculator.cpp" 
 
     main.cpp
-     "Skin/DummySkin.cpp" "util/ErrorCalculator.h" "util/ErrorCalculator.cpp" "util/Constant.h" "UI/HUD.h" "Objects/HitObject.h" "Objects/HitObject.cpp" "util/Constant.cpp" "util/DifficultyCalculator.h" "util/DifficultyCalculator.cpp" "Scene/Menu.cpp" "Scene/RankingPanel.cpp" "Scene/Start.cpp")
+
+)
 
 find_package(allegro CONFIG REQUIRED)
 target_link_libraries(2025_I2P2_Final Allegro::allegro Allegro::allegro_main Allegro::allegro_font Allegro::allegro_dialog 
                       Allegro::allegro_primitives Allegro::allegro_image Allegro::allegro_ttf 
                       Allegro::allegro_audio Allegro::allegro_acodec)
 target_link_libraries(2025_I2P2_Final)
+
+if(WIN32)
+    target_link_libraries(2025_I2P2_Final winmm)
+endif()

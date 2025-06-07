@@ -20,8 +20,13 @@ namespace game_data
     extern int hit50;
     extern int miss;
     extern float accuracy;
-    extern long long gamePosition;
+    extern double gamePosition;
     extern long long score;
+    extern long long hitValue;
+    extern long long hitBonusValue;
+    extern long long hitPunishment;
+    extern long long hitBonus;
+    extern long long bonus;
 
     extern int nowGameState;
 
@@ -32,9 +37,12 @@ namespace game_data
     extern float starRate;
     extern float OD;
     extern float speed;
+    extern int nkey;
     extern float scrollSpeed;
     extern float scrollSpeedMultiplexer;
     extern float hitPosition;
+    extern float modMultiplier;
+    extern float modDivider;
 
     float GetScrollMilisecond();
 }
