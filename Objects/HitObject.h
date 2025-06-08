@@ -40,4 +40,5 @@ protected:
     bool m_isAvailable=true; // whether the key can be hit.
     int m_hitValue=-1; // Judgement
     int m_hitError=-1;
+    int m_accumulatedCombo=0;
 };

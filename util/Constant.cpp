@@ -23,16 +23,19 @@ namespace constant
     const float kPixelScale=1.f*kScreenH/480;
     const int kOffsetX=(kScreenW-kPixelScale*kGameMaxPixelX)/2;
 
-    const int kSkipTimeThreshold=5000; // ms
-    const int kHitobjectPreviewThreshold=5000; // ms
+    const int kHitobjectPreviewThreshold=1500; // ms
+    const int kSkipTimeThreshold=5000-kHitobjectPreviewThreshold; // ms
 
     const int kBlockWidth=75;
     const int kBlockHeight=20;
     const int kHitlineThickness=5;
     const int kBorderlineThickness=5;
     const int kPlaytimeLineThickness=10;
+    const int kHpLineThickness=10;
     const int kComboPosition=240;
     const int kScorePosition=150;
+    const int kHitbarPosition=450;
+    const int kHitbarWidth=15;
 
     const int kMaxScore=1000000;
 }

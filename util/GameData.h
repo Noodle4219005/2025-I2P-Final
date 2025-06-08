@@ -22,6 +22,7 @@ namespace game_data
     };
 
     extern int combo;
+    extern int maxCombo;
     extern int hit300;
     extern int hit300H;
     extern int hit100;
@@ -55,6 +56,7 @@ namespace game_data
     extern float modDivider;
     extern std::vector<HitResult> hitResults; // time acc
     extern float playtimeLength;
+    extern float hitbarScale;
 
     extern float offset; // in ms
 

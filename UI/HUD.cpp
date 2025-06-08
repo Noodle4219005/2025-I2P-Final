@@ -6,6 +6,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 
 HUD& HUD::GetInstance()
 {
@@ -107,6 +108,63 @@ void HUD::DrawForeground()
 
     // playtime
     al_draw_line(0, constant::kScreenH, constant::kScreenW * (game_data::gamePosition/game_data::playtimeLength), constant::kScreenH, al_map_rgba(0, 255, 0, 150), constant::kPlaytimeLineThickness*2);
+
+    // HP bar
+    al_draw_line(startX+playFieldWidth*1.1, constant::kScreenH, startX+playFieldWidth*1.1, 1.f*constant::kScreenH*3/5 + 1.f*constant::kScreenH*2/5*(1.-game_data::hp/1000.), al_map_rgb(255, 192, 203), constant::kHpLineThickness);
+
+    // hitbar(error bar)
+    int halfX=constant::kScreenW/2;
+    int perfectHitWindow=64 - 3*game_data::OD;
+    perfectHitWindow*=game_data::hitbarScale;
+    int goodHitWindow=127 - 3*game_data::OD;
+    goodHitWindow*=game_data::hitbarScale;
+    int mehHitWindow=151 - 3*game_data::OD;
+    mehHitWindow*=game_data::hitbarScale;
+    al_draw_line(screenMiddleX-mehHitWindow, constant::kHitbarPosition*constant::kPixelScale,
+                 screenMiddleX+mehHitWindow, constant::kHitbarPosition*constant::kPixelScale, 
+                 al_map_rgb(200, 170, 0), constant::kHitbarWidth);
+    al_draw_line(screenMiddleX-goodHitWindow, constant::kHitbarPosition*constant::kPixelScale, 
+                 screenMiddleX+goodHitWindow, constant::kHitbarPosition*constant::kPixelScale, 
+                 al_map_rgb(0, 255, 0), constant::kHitbarWidth);
+    al_draw_line(screenMiddleX-perfectHitWindow, constant::kHitbarPosition*constant::kPixelScale, 
+                 screenMiddleX+perfectHitWindow, constant::kHitbarPosition*constant::kPixelScale, 
+                 al_map_rgb(0, 255, 255), constant::kHitbarWidth);
+    al_draw_line(screenMiddleX-5, constant::kHitbarPosition*constant::kPixelScale,
+                 screenMiddleX+5, constant::kHitbarPosition*constant::kPixelScale, 
+                 al_map_rgb(150, 150, 150), constant::kHitbarWidth*3);
+    auto revHitResults{game_data::hitResults};
+    std::reverse(revHitResults.begin(), revHitResults.end());
+    float avergeHitError=0;
+    int count=0;
+    for (auto& result : revHitResults) {
+        float a=1.f*(5000-(game_data::gamePosition-result.time))/5000*255;
+        if (a<=0) break;
+        int hitError=result.hitError*(result.isErrorPositive?1:-1)*game_data::hitbarScale;
+        count++;
+        avergeHitError+=hitError;
+        if (abs(hitError)>mehHitWindow) continue;
+        else if (abs(hitError)>goodHitWindow) {
+            al_draw_line(screenMiddleX+hitError-2, constant::kHitbarPosition*constant::kPixelScale,
+                         screenMiddleX+hitError+2, constant::kHitbarPosition*constant::kPixelScale, 
+                         al_map_rgba(200, 170, 0, a), constant::kHitbarWidth*3);
+        }
+        else if (abs(hitError)>perfectHitWindow) {
+            al_draw_line(screenMiddleX+hitError-2, constant::kHitbarPosition*constant::kPixelScale,
+                         screenMiddleX+hitError+2, constant::kHitbarPosition*constant::kPixelScale, 
+                         al_map_rgba(0, 255, 0, a), constant::kHitbarWidth*3);
+        }
+        else {
+            al_draw_line(screenMiddleX+hitError-2, constant::kHitbarPosition*constant::kPixelScale,
+                         screenMiddleX+hitError+2, constant::kHitbarPosition*constant::kPixelScale, 
+                         al_map_rgba(0, 255, 255, a), constant::kHitbarWidth*3);
+        }
+    }
+    if (count) avergeHitError/=count;
+    avergeHitError=std::clamp(avergeHitError, -1.f*mehHitWindow, 1.f*mehHitWindow);
+    al_draw_filled_triangle(screenMiddleX+avergeHitError, constant::kHitbarPosition*constant::kPixelScale,
+                            screenMiddleX+avergeHitError-25, constant::kHitbarPosition*constant::kPixelScale-20,
+                            screenMiddleX+avergeHitError+25, constant::kHitbarPosition*constant::kPixelScale-20,
+                            al_map_rgb(255, 255, 255));
 }
 
 void HUD::DrawBackground() 

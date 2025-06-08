@@ -19,7 +19,7 @@ void Hold::OnKeyDown()
 void Hold::OnKeyUp()
 {
     if (!m_isAvailable) return;
-    if (game_data::gamePosition<m_time && (GetHitValue(m_time)==MISS || GetHitValue(m_time)==NONE)) return;
+    if (m_isFirstKeyDown) return;
     m_isKeyDown=false;
     m_isAvailable=false;
     m_hitValue=GetHoldValue(abs(m_firstKeyPosition-m_time), m_endTime);
@@ -34,6 +34,10 @@ void Hold::Update()
     else m_positionY+=m_speed*deltaTime*game_data::scrollSpeedMultiplier;
     m_positionEndY+=m_speed*deltaTime*game_data::scrollSpeedMultiplier;
     m_lastUpdateTime=game_data::gamePosition;
+    if (m_isKeyDown && m_isAvailable && game_data::gamePosition-m_time>m_accumulatedCombo*100) {
+        m_accumulatedCombo++;
+        game_data::combo++;
+    }
     // TODO: isAvailable and isAlive
     if (!m_isKeyDown && m_isAvailable && game_data::gamePosition>m_time && (GetHitValue(m_time)==NONE || GetHitValue(m_time)==MISS || GetHitValue(m_time)==MEH)) {
         // The magic number is from the ErrorCalculator and ppy osu mania judgement.

@@ -14,7 +14,6 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_primitives.h>
 #include <chrono>
-#include <thread>
 
 void Game::Initialize() 
 {
@@ -35,7 +34,11 @@ void Game::Initialize()
     }
     HUD::GetInstance().Init();
     (void)Skin::GetInstance();
-    m_isFirstLoop=true;
+    music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, 0);
+    AudioHelper::StopSample(music);
+    m_startTime=std::chrono::steady_clock::now();
+    game_data::gamePosition=-constant::kHitobjectPreviewThreshold;
+    m_isPlayed=false;
     game_data::nowGameState=game_data::PLAYING;
 }
 
@@ -92,8 +95,8 @@ void Game::OnKeyUp(int keyCode)
 
 void Game::Update(float deltaTime)
 {
-    if (!m_isFirstLoop && game_data::nowGameState==game_data::PAUSE) {
-        AudioHelper::StopSample(music);
+    if (game_data::nowGameState==game_data::PAUSE) {
+        if (m_isPlayed) AudioHelper::StopSample(music);
         return;
     }
     int baseScore=(1000000 * game_data::modMultiplier * 0.5 / m_beatmap->GetTotalNotes()) * (game_data::hitValue / 320);
@@ -101,24 +104,23 @@ void Game::Update(float deltaTime)
     game_data::score=baseScore+bonusScore;
     int droppedTiming=0;
     int goalPosition=0;
-    if (!m_isFirstLoop) goalPosition=AudioHelper::GetSamplePosition(music);
-    // std::cout<<"goal: "<<goalPosition<<std::endl;
+    if (m_isPlayed) goalPosition=AudioHelper::GetSamplePosition(music);
+    else goalPosition=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-m_startTime).count() - constant::kHitobjectPreviewThreshold;
+    // std::cout<<goalPosition<<std::endl;
     while (m_beatmap->GetNextTiming()<=goalPosition) {
         droppedTiming++;
         game_data::gamePosition=m_beatmap->GetNextTiming();
         UpdateHitObjects();
         m_beatmap->PushTiming();
     }
-    if (droppedTiming>1) std::cout<<"Dropped: "<<droppedTiming-1<<std::endl;
     game_data::gamePosition=goalPosition;
-    UpdateHitObjects();
-    if (m_isFirstLoop) {
-        Draw();
-        std::cout<<"isFirst: "<<game_data::gamePosition<<std::endl;
-        m_isFirstLoop=false;
-        al_flip_display();
+    if (game_data::gamePosition>=0 && !m_isPlayed) {
         music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, 0);
+        m_isPlayed=true;
     }
+    if (droppedTiming>1) std::cout<<"Dropped: "<<droppedTiming-1<<std::endl;
+    UpdateHitObjects();
+    game_data::maxCombo=std::max(game_data::maxCombo, game_data::combo);
 }
 
 void Game::Draw() const
@@ -133,6 +135,9 @@ void Game::Draw() const
             if (hitObject->GetPositionY()<0) break;
             hitObject->Draw();
         }
+    }
+    if (game_data::gamePosition<(m_firstObjectTime-constant::kSkipTimeThreshold)) {
+        Skin::GetInstance().DrawPlaySkip();
     }
     HUD::GetInstance().DrawForeground();
 }

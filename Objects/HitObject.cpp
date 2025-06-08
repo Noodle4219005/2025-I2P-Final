@@ -35,8 +35,9 @@ int HitObject::GetEndTime()
 
 void HitObject::Init()
 {
-    m_lastUpdateTime=0;
+    m_lastUpdateTime=-constant::kHitobjectPreviewThreshold;
     m_speed=constant::kScreenH/game_data::GetScrollMilisecond();
+    m_accumulatedCombo=0;
 }
 
 int HitObject::GetColumn() 

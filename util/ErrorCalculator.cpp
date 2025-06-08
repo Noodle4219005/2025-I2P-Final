@@ -71,6 +71,7 @@ void IncrementHitCounter(int judgement, float hitError, bool isPositive)
         game_data::hitBonusValue+=32;
         game_data::hitBonus+=2;
         game_data::combo+=1;
+        game_data::hp=std::min(game_data::hp+10, 1000);
         acc=100;
         break;
     case GREAT: 
@@ -79,6 +80,7 @@ void IncrementHitCounter(int judgement, float hitError, bool isPositive)
         game_data::hitBonusValue+=32;
         game_data::hitBonus+=1;
         game_data::combo+=1;
+        game_data::hp=std::min(game_data::hp+5, 1000);
         acc=100;
         break;
     case GOOD:
@@ -95,6 +97,7 @@ void IncrementHitCounter(int judgement, float hitError, bool isPositive)
         game_data::hitBonusValue+=8;
         game_data::hitPunishment+=24;
         game_data::combo+=1;
+        game_data::hp=std::max(game_data::hp-10, 0);
         acc=33.33;
         break;
     case MEH:
@@ -103,12 +106,14 @@ void IncrementHitCounter(int judgement, float hitError, bool isPositive)
         game_data::hitBonusValue+=4;
         game_data::hitPunishment+=44;
         game_data::combo+=1;
+        game_data::hp=std::max(game_data::hp-25, 0);
         acc=16.67;
         break;
     case MISS:
         game_data::miss++;
         game_data::hitPunishment+=100005; // INF
         game_data::combo=0;
+        game_data::hp=std::max(game_data::hp-50, 0);
         acc=0;
         break;
     default:

@@ -204,7 +204,7 @@ std::unique_ptr<HitObject> BeatmapParser::GetNextHitObject()
     int x, time, type;
     int endtime=-1;
     int hitSound; // from 0 to 3, normal, whistle, finish, clap
-    std::cout<<"read: "<<*m_nodeIter<<std::endl;
+    // std::cout<<"read: "<<*m_nodeIter<<std::endl;
     ++m_nodeIter;
 
     // the magic number is from ppy osu file format
@@ -223,8 +223,8 @@ std::unique_ptr<HitObject> BeatmapParser::GetNextHitObject()
         endtime=stoi(token);
     }
 
-    if (endtime<0) return std::make_unique<Node>(Node(x, time, type, GetStartPosition(time, time), "res/skin/normal-hitnormal.wav"));
-    return std::make_unique<Hold>(Hold(x, time, type, endtime, GetStartPosition(time, time), GetStartPosition(endtime, endtime), "res/skin/normal-hitnormal.wav"));
+    if (endtime<0) return std::make_unique<Node>(Node(x, time, type, GetStartPosition(time, time+constant::kHitobjectPreviewThreshold), "res/skin/normal-hitnormal.wav"));
+    return std::make_unique<Hold>(Hold(x, time, type, endtime, GetStartPosition(time, time+constant::kHitobjectPreviewThreshold), GetStartPosition(endtime, endtime+constant::kHitobjectPreviewThreshold), "res/skin/normal-hitnormal.wav"));
 }
 
 float BeatmapParser::GetNextTiming() 
@@ -289,7 +289,7 @@ float BeatmapParser::GetStartPosition(float perfectHitPosition, float deltaTime)
     float speed=constant::kScreenH/game_data::GetScrollMilisecond();
     auto iter=m_timingIter;
     std::vector<std::pair<float, float>> changingPoint; // position, speedMultiplier
-    changingPoint.push_back({std::max(perfectHitPosition-deltaTime, 0.f), game_data::scrollSpeedMultiplier});
+    changingPoint.push_back({perfectHitPosition-deltaTime, game_data::scrollSpeedMultiplier});
     while (iter!=m_timingList.end() && iter->time<=perfectHitPosition) {
         if (iter->time>=changingPoint.back().first) {
             changingPoint.push_back({iter->time, 0});

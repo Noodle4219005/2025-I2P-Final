@@ -247,3 +247,14 @@ void Skin::DrawHit(int val, float expand) const
     Engine::Image imageScaled(filename, constant::kScreenW/2, constant::kScorePosition*constant::kPixelScale, pictureWidth*expand, pictureHeight*expand, 0.5, 0.5);
     imageScaled.Draw();
 }
+
+void Skin::DrawPlaySkip() const
+{
+    std::string filename=constant::kSkinPath+"\\"+"play-skip.png";
+    Engine::Image image(filename, 0, constant::kScreenH, constant::kScreenW, 0, 0, 1);
+    image.Draw();
+}
+
+void Skin::DrawPause() const
+{
+}

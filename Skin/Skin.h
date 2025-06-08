@@ -19,6 +19,8 @@ public:
     void DrawScore(int score, float acc) const;
     void DrawCombo(int combo, float comboExpand) const;
     void DrawHit(int val, float expand) const;
+    void DrawPlaySkip() const;
+    void DrawPause() const;
 private:
     enum Sections
     {

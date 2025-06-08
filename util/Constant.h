@@ -28,8 +28,11 @@ namespace constant
     extern const int kHitlineThickness;
     extern const int kBorderlineThickness;
     extern const int kPlaytimeLineThickness;
+    extern const int kHpLineThickness;
     extern const int kComboPosition;
     extern const int kScorePosition;
+    extern const int kHitbarPosition;
+    extern const int kHitbarWidth;
 
     extern const int kMaxScore;
 }
