@@ -23,13 +23,13 @@ namespace game_data
     int nowGameState=LOADING;
 
     long long mapID=622946;
-    std::string difficultyName="HD"; // which difficulty
+    std::string difficultyName="MX"; // which difficulty
     float starRate=0;
     float OD=0;
     int nkey=4;
     float speed=1;
-    float scrollSpeed=15;
-    float scrollSpeedMultiplexer=1.;
+    float scrollSpeed=22;
+    float scrollSpeedMultiplier=1.;
     float hitPosition=408; // from 240 to 480
     float modMultiplier=1.;
     float modDivider=1.;

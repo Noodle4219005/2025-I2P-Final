@@ -22,7 +22,8 @@ public:
     float GetSpeedScale();
     float GetStartPosition(float perfectHitPosition, float deltaTime);
     std::unique_ptr<HitObject> GetNextHitObject();
-    void UpdateTiming(int musicPosition);
+    float GetNextTiming();
+    void PushTiming();
     bool IsMapEnded();
 
 private:

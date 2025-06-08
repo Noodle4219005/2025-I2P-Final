@@ -21,6 +21,7 @@ namespace constant
     extern const int kOffsetX;
 
     extern const int kSkipTimeThreshold; // ms
+    extern const int kHitobjectPreviewThreshold; // ms
 
     extern const int kBlockWidth;
     extern const int kBlockHeight;

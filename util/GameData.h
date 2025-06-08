@@ -39,7 +39,7 @@ namespace game_data
     extern float speed;
     extern int nkey;
     extern float scrollSpeed;
-    extern float scrollSpeedMultiplexer;
+    extern float scrollSpeedMultiplier;
     extern float hitPosition;
     extern float modMultiplier;
     extern float modDivider;

@@ -18,10 +18,16 @@ void Game::Initialize()
 {
     game_data::nowGameState=game_data::LOADING;
     m_beatmap=std::make_unique<BeatmapParser>(BeatmapParser(game_data::mapID, game_data::difficultyName));
-    music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, 0.f);
     //AudioHelper::ChangeSampleSpeed(music, 1);
     m_activeObjectLists=std::vector<std::list<std::unique_ptr<HitObject>>>(m_beatmap->GetTotalColumns());
     m_nextHitObject=m_beatmap->GetNextHitObject();
+    m_firstObjectTime=m_nextHitObject->GetStartTime();
+    while (m_nextHitObject->GetStartTime()<INT_MAX-5) {
+        m_activeObjectLists[m_nextHitObject->GetColumn()].push_back(std::move(m_nextHitObject));
+        if (!m_beatmap->IsMapEnded()) m_nextHitObject=std::move(m_beatmap->GetNextHitObject());
+        else m_nextHitObject=std::make_unique<HitObject>(HitObject(0, INT_MAX, 0, 0, ""));
+    }
+    music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, 0.f);
     game_data::nowGameState=game_data::PLAYING;
 }
 
@@ -47,10 +53,9 @@ void Game::OnKeyDown(int keyCode)
     }
 
     // skip the front space of the music
-    if (game_data::gamePosition<(m_nextHitObject->GetStartTime()-constant::kSkipTimeThreshold) && keyCode==constant::keyMap["skip"]) {
+    if (game_data::gamePosition<(m_firstObjectTime-constant::kSkipTimeThreshold) && keyCode==constant::keyMap["skip"]) {
         std::cout<<"Skipped\n";
-        m_nextHitObject->GetStartTime();
-        AudioHelper::ChangeSamplePosition(music, m_nextHitObject->GetStartTime()-constant::kSkipTimeThreshold);
+        AudioHelper::ChangeSamplePosition(music, m_firstObjectTime-constant::kSkipTimeThreshold);
     }
 }
 
@@ -72,30 +77,24 @@ void Game::OnKeyUp(int keyCode)
 
 void Game::Update(float deltaTime)
 {
-    int baseScore=(1000000 * game_data::modMultiplier * 0.5 / m_beatmap->GetTotalNotes()) * (game_data::hitValue / 320);
-    int bonusScore=(1000000 * game_data::modMultiplier * 0.5 / m_beatmap->GetTotalNotes()) * (game_data::hitBonusValue * sqrt(game_data::hitBonus) / 320);
-    game_data::score=baseScore+bonusScore;
-    game_data::gamePosition=AudioHelper::GetSamplePosition(music);
     if (game_data::nowGameState==game_data::PAUSE) {
         AudioHelper::StopSample(music);
         return;
     }
-    m_beatmap->UpdateTiming(game_data::gamePosition);
-    while (m_nextHitObject->GetStartTime() < game_data::gamePosition+game_data::GetScrollMilisecond()) {
-        m_activeObjectLists[m_nextHitObject->GetColumn()].push_back(std::move(m_nextHitObject));
-        if (!m_beatmap->IsMapEnded()) m_nextHitObject=std::move(m_beatmap->GetNextHitObject());
-        else m_nextHitObject=std::make_unique<HitObject>(HitObject(0, INT_MAX, 0, 0, ""));
+    int baseScore=(1000000 * game_data::modMultiplier * 0.5 / m_beatmap->GetTotalNotes()) * (game_data::hitValue / 320);
+    int bonusScore=(1000000 * game_data::modMultiplier * 0.5 / m_beatmap->GetTotalNotes()) * (game_data::hitBonusValue * sqrt(game_data::hitBonus) / 320);
+    game_data::score=baseScore+bonusScore;
+    int goalPosition=AudioHelper::GetSamplePosition(music);
+    int droppedTiming=0;
+    while (m_beatmap->GetNextTiming()<=goalPosition) {
+        droppedTiming++;
+        game_data::gamePosition=m_beatmap->GetNextTiming();
+        UpdateHitObjects();
+        m_beatmap->PushTiming();
     }
-    for (auto& objectList : m_activeObjectLists) {
-        if (objectList.empty()) continue;
-        for (auto& object : objectList) {
-            object->Update();
-        }
-        if (objectList.size() && !objectList.front()->IsAlive()) {
-            objectList.pop_front();
-        }
-    }
-    game_data::scrollSpeedMultiplexer=m_beatmap->GetSpeedScale();
+    if (droppedTiming>1) std::cout<<"Dropped: "<<droppedTiming-1<<std::endl;
+    game_data::gamePosition=goalPosition;
+    UpdateHitObjects();
 }
 
 void Game::Draw() const
@@ -111,4 +110,18 @@ void Game::Draw() const
         }
     }
     HUD::GetInstance().DrawForeground();
+}
+
+void Game::UpdateHitObjects()
+{
+    game_data::scrollSpeedMultiplier=m_beatmap->GetSpeedScale();
+    for (auto& objectList : m_activeObjectLists) {
+        if (objectList.empty()) continue;
+        for (auto& object : objectList) {
+            object->Update();
+        }
+        if (objectList.size() && !objectList.front()->IsAlive()) {
+            objectList.pop_front();
+        }
+    }
 }

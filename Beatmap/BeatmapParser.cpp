@@ -223,40 +223,44 @@ std::unique_ptr<HitObject> BeatmapParser::GetNextHitObject()
         endtime=stoi(token);
     }
 
-    if (endtime<0) return std::make_unique<Node>(Node(x, time, type, GetStartPosition(time, game_data::GetScrollMilisecond()), "res/skin/normal-hitnormal.wav"));
-    return std::make_unique<Hold>(Hold(x, time, type, endtime, GetStartPosition(time, game_data::GetScrollMilisecond()), GetStartPosition(endtime, game_data::GetScrollMilisecond()+endtime-time), "res/skin/normal-hitnormal.wav"));
+    if (endtime<0) return std::make_unique<Node>(Node(x, time, type, GetStartPosition(time, time), "res/skin/normal-hitnormal.wav"));
+    return std::make_unique<Hold>(Hold(x, time, type, endtime, GetStartPosition(time, time), GetStartPosition(endtime, endtime), "res/skin/normal-hitnormal.wav"));
 }
 
-void BeatmapParser::UpdateTiming(int musicPosition) 
+float BeatmapParser::GetNextTiming() 
 {
-    while (m_timingIter!=m_timingList.end() && m_timingIter->time<=musicPosition) {
-        if (m_baseBPM==-1) m_baseBPM=GetBPM(m_timingIter->beatLength);
-        if (m_timingIter->uninherited) {
-            int bpm=GetBPM(m_timingIter->beatLength);
-            m_bpmMultipliler=bpm/m_baseBPM;
-        }
-        else {
-            m_bpmMultipliler=(-m_timingIter->beatLength)/100.;
-        }
-        switch (m_timingIter->sampleSet)
-        {
-        case 1: 
-            m_sampleSet="Normal";
-            break;
-        case 2:
-            m_sampleSet="Soft";
-            break;
-        case 3:
-            m_sampleSet="Drum";
-            break;
-        default:
-            break;
-        }
-        std::cout<<"BPM Mul: "<<m_bpmMultipliler<<std::endl;
-        m_sampleIndex=m_timingIter->sampleIndex;
-        m_volume=1.*m_timingIter->volume/100.;
-        m_timingIter=next(m_timingIter);
+    if (m_timingIter==m_timingList.end()) return FLT_MAX;
+    else return m_timingIter->time;
+}
+
+void BeatmapParser::PushTiming() 
+{
+    if (m_baseBPM==-1) m_baseBPM=GetBPM(m_timingIter->beatLength);
+    if (m_timingIter->uninherited) {
+        int bpm=GetBPM(m_timingIter->beatLength);
+        m_bpmMultipliler=bpm/m_baseBPM;
     }
+    else {
+        m_bpmMultipliler=1./((-m_timingIter->beatLength)/100.);
+    }
+    switch (m_timingIter->sampleSet)
+    {
+    case 1: 
+        m_sampleSet="Normal";
+        break;
+    case 2:
+        m_sampleSet="Soft";
+        break;
+    case 3:
+        m_sampleSet="Drum";
+        break;
+    default:
+        break;
+    }
+    std::cout<<"BPM Mul: "<<m_bpmMultipliler<<std::endl;
+    m_sampleIndex=m_timingIter->sampleIndex;
+    m_volume=1.*m_timingIter->volume/100.;
+    m_timingIter=next(m_timingIter);
 }
 
 std::string BeatmapParser::GetAudioFilePath()
@@ -284,9 +288,9 @@ float BeatmapParser::GetStartPosition(float perfectHitPosition, float deltaTime)
     float ret=0;
     float speed=constant::kScreenH/game_data::GetScrollMilisecond();
     auto iter=m_timingIter;
-    std::vector<std::pair<float, float>> changingPoint; // position, speedMultiplexer
-    changingPoint.push_back({perfectHitPosition-deltaTime, game_data::scrollSpeedMultiplexer});
-    while (iter!=m_timingList.end() && iter->time<perfectHitPosition) {
+    std::vector<std::pair<float, float>> changingPoint; // position, speedMultiplier
+    changingPoint.push_back({std::max(perfectHitPosition-deltaTime, 0.f), game_data::scrollSpeedMultiplier});
+    while (iter!=m_timingList.end() && iter->time<=perfectHitPosition) {
         if (iter->time>=changingPoint.back().first) {
             changingPoint.push_back({iter->time, 0});
         }
@@ -296,7 +300,7 @@ float BeatmapParser::GetStartPosition(float perfectHitPosition, float deltaTime)
             else changingPoint.back().second=bpm/m_baseBPM;
         }
         else {
-            changingPoint.back().second=-iter->beatLength/100;
+            changingPoint.back().second=1./(-iter->beatLength/100.);
         }
         iter=next(iter);
     }

@@ -30,7 +30,7 @@ int HitObject::GetStartTime()
 
 void HitObject::Init()
 {
-    m_lastUpdateTime=m_time-game_data::GetScrollMilisecond();
+    m_lastUpdateTime=0;
     m_speed=constant::kScreenH/game_data::GetScrollMilisecond();
 }
 
@@ -42,8 +42,8 @@ int HitObject::GetColumn()
 void HitObject::Update() 
 {
     double deltaTime=game_data::gamePosition-m_lastUpdateTime;
-    m_positionY+=m_speed*deltaTime*game_data::scrollSpeedMultiplexer;
-    m_positionEndY+=m_speed*deltaTime*game_data::scrollSpeedMultiplexer;
+    m_positionY+=m_speed*deltaTime*game_data::scrollSpeedMultiplier;
+    m_positionEndY+=m_speed*deltaTime*game_data::scrollSpeedMultiplier;
     m_lastUpdateTime=game_data::gamePosition;
     // TODO: isAvailable and isAlive
     if (game_data::gamePosition>m_time && (GetHitValue(m_time)==NONE || GetHitValue(m_time)==MISS)) {
