@@ -27,4 +27,7 @@ namespace constant
     extern const int kBlockHeight;
     extern const int kHitlineThickness;
     extern const int kBorderlineThickness;
+    extern const int kPlaytimeLineThickness;
+
+    extern const int kMaxScore;
 }

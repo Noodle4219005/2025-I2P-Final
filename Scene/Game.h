@@ -20,6 +20,7 @@ public:
 
 private:
     int m_firstObjectTime=0;
+    int m_lastObjectTime=0;
     int m_timing=0;
     std::unique_ptr<HitObject> m_nextHitObject;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> music;

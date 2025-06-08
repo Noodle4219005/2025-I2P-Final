@@ -10,6 +10,7 @@ public:
     HitObject();
     virtual ~HitObject()=default;
     int GetStartTime();
+    int GetEndTime();
     int GetColumn();
     float GetPositionY() const;
     int GetType() const;

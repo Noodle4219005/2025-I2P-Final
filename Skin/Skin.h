@@ -16,6 +16,7 @@ public:
 
     void DrawHold(int start, int end) const;
     void Draw(int start, int end) const;
+    void DrawScore(int score, float acc) const;
 private:
     enum Sections
     {

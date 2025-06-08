@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace game_data 
 {
@@ -10,6 +11,14 @@ namespace game_data
         PLAYING,
         PAUSE,
         FAILED
+    };
+
+    struct HitResult 
+    {
+        float time;
+        float hitError;
+        float acc;
+        bool isErrorPositive; // positive is late
     };
 
     extern int combo;
@@ -43,6 +52,10 @@ namespace game_data
     extern float hitPosition;
     extern float modMultiplier;
     extern float modDivider;
+    extern std::vector<HitResult> hitResults; // time acc
+    extern float playtimeLength;
+
+    extern float offset; // in ms
 
     float GetScrollMilisecond();
 }

@@ -6,16 +6,42 @@
 #include <iostream>
 #include <allegro5/allegro_primitives.h>
 
+void Hold::OnKeyDown()
+{
+    if (!m_isAvailable) return;
+    if (!m_isFirstKeyDown) return;
+    if (game_data::gamePosition<m_time && (GetHitValue(m_time)==MISS || GetHitValue(m_time)==NONE)) return;
+    m_isKeyDown=true;
+    m_isFirstKeyDown=false;
+    m_firstKeyPosition=game_data::gamePosition;
+}
+
+void Hold::OnKeyUp()
+{
+    if (!m_isAvailable) return;
+    if (game_data::gamePosition<m_time && (GetHitValue(m_time)==MISS || GetHitValue(m_time)==NONE)) return;
+    m_isKeyDown=false;
+    m_isAvailable=false;
+    m_hitValue=GetHoldValue(abs(m_firstKeyPosition-m_time), m_endTime);
+    m_hitError=std::min((abs(game_data::gamePosition-m_endTime)+abs(m_firstKeyPosition-m_time))/2, 151. - 3*game_data::OD);
+    IncrementHitCounter(m_hitValue, m_hitError, (game_data::gamePosition-m_endTime+m_firstKeyPosition-m_time)>0);
+}
+
 void Hold::Update() 
 {
     double deltaTime=game_data::gamePosition-m_lastUpdateTime;
-    m_positionY+=m_speed*deltaTime*game_data::scrollSpeedMultiplier;
+    if (m_isFirstKeyDown && m_isKeyDown) m_positionY=game_data::hitPosition*constant::kPixelScale;
+    else m_positionY+=m_speed*deltaTime*game_data::scrollSpeedMultiplier;
     m_positionEndY+=m_speed*deltaTime*game_data::scrollSpeedMultiplier;
     m_lastUpdateTime=game_data::gamePosition;
     // TODO: isAvailable and isAlive
-    if (game_data::gamePosition>m_time && (GetHitValue(m_time)==NONE || GetHitValue(m_time)==MISS)) {
-        m_hitValue=MISS;
-        game_data::miss++;
+    if (!m_isKeyDown && m_isAvailable && game_data::gamePosition>m_time && (GetHitValue(m_time)==NONE || GetHitValue(m_time)==MISS || GetHitValue(m_time)==MEH)) {
+        // The magic number is from the ErrorCalculator and ppy osu mania judgement.
+        IncrementHitCounter(MISS, 188 - 3*game_data::OD, true);
+        m_isAvailable=0;
+    }
+    if (m_isKeyDown && m_isAvailable && game_data::gamePosition>m_endTime && (GetHitValue(m_endTime)==NONE || GetHitValue(m_endTime)==MISS || GetHitValue(m_endTime)==MEH)) {
+        IncrementHitCounter(MEH, 151 - 3*game_data::OD, true);
         m_isAvailable=0;
     }
     if (!m_isAvailable && m_positionEndY>constant::kScreenH) {

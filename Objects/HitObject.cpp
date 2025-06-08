@@ -28,6 +28,11 @@ int HitObject::GetStartTime()
     return m_time;
 }
 
+int HitObject::GetEndTime()
+{
+    return m_endTime;
+}
+
 void HitObject::Init()
 {
     m_lastUpdateTime=0;
@@ -46,9 +51,9 @@ void HitObject::Update()
     m_positionEndY+=m_speed*deltaTime*game_data::scrollSpeedMultiplier;
     m_lastUpdateTime=game_data::gamePosition;
     // TODO: isAvailable and isAlive
-    if (game_data::gamePosition>m_time && (GetHitValue(m_time)==NONE || GetHitValue(m_time)==MISS)) {
-        m_hitValue=MISS;
-        game_data::miss++;
+    if (m_isAvailable && game_data::gamePosition>m_time && (GetHitValue(m_time)==NONE || GetHitValue(m_time)==MISS || GetHitValue(m_time)==MEH)) {
+        // The magic number is from the ErrorCalculator and ppy osu mania judgement.
+        IncrementHitCounter(MISS, 188 - 3*game_data::OD, true);
         m_isAvailable=0;
     }
     if (!m_isAvailable && m_positionY>constant::kScreenH) {

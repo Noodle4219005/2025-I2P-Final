@@ -11,7 +11,7 @@ void Node::OnKeyDown()
     if (game_data::gamePosition<m_time && (GetHitValue(m_time)==MISS || GetHitValue(m_time)==NONE)) return;
     m_hitValue=GetHitValue(m_time);
     m_hitError=abs(game_data::gamePosition-m_time);
-    IncrementHitCounter(m_hitValue);
+    IncrementHitCounter(m_hitValue, m_hitError, game_data::gamePosition>m_time);
     m_isAvailable=false;
     m_isAlive=false;
 }

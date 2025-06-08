@@ -30,4 +30,7 @@ namespace constant
     const int kBlockHeight=20;
     const int kHitlineThickness=5;
     const int kBorderlineThickness=5;
+    const int kPlaytimeLineThickness=10;
+
+    const int kMaxScore=1000000;
 }

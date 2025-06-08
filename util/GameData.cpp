@@ -1,6 +1,7 @@
 #include "GameData.h"
 
 #include <string>
+#include <vector>
 
 namespace game_data 
 {
@@ -23,7 +24,7 @@ namespace game_data
     int nowGameState=LOADING;
 
     long long mapID=622946;
-    std::string difficultyName="MX"; // which difficulty
+    std::string difficultyName="HD"; // which difficulty
     float starRate=0;
     float OD=0;
     int nkey=4;
@@ -33,15 +34,21 @@ namespace game_data
     float hitPosition=408; // from 240 to 480
     float modMultiplier=1.;
     float modDivider=1.;
+    std::vector<HitResult> hitResults{}; // time acc
+    float playtimeLength=0;
+
+    float offset=0;
 
     void Refresh() 
     {
         hit300=hit300H=hit100=hit100H=hit50=miss=0;
         bonus=hitBonus=hitBonusValue=hitPunishment=hitValue=score=0;
         gamePosition=0;
+        playtimeLength=0;
         OD=0;
         accuracy=100.f;
         nowGameState=LOADING;
+        decltype(hitResults)().swap(hitResults);
     }
 
     // Return the scroll speed without multiplexer

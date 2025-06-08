@@ -16,6 +16,7 @@
 
 void Game::Initialize() 
 {
+    game_data::Refresh();
     game_data::nowGameState=game_data::LOADING;
     m_beatmap=std::make_unique<BeatmapParser>(BeatmapParser(game_data::mapID, game_data::difficultyName));
     //AudioHelper::ChangeSampleSpeed(music, 1);
@@ -24,9 +25,13 @@ void Game::Initialize()
     m_firstObjectTime=m_nextHitObject->GetStartTime();
     while (m_nextHitObject->GetStartTime()<INT_MAX-5) {
         m_activeObjectLists[m_nextHitObject->GetColumn()].push_back(std::move(m_nextHitObject));
-        if (!m_beatmap->IsMapEnded()) m_nextHitObject=std::move(m_beatmap->GetNextHitObject());
+        if (!m_beatmap->IsMapEnded()) {
+            m_nextHitObject=std::move(m_beatmap->GetNextHitObject());
+            game_data::playtimeLength=m_lastObjectTime=m_nextHitObject->GetEndTime();
+        }
         else m_nextHitObject=std::make_unique<HitObject>(HitObject(0, INT_MAX, 0, 0, ""));
     }
+    HUD::GetInstance().Init();
     music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, 0.f);
     game_data::nowGameState=game_data::PLAYING;
 }
@@ -43,13 +48,17 @@ void Game::OnKeyDown(int keyCode)
     for (int i=1; i<=m_beatmap->GetTotalColumns(); ++i) {
         std::string key=std::to_string(m_beatmap->GetTotalColumns())+"k"+std::to_string(i);
         if (keyCode!=constant::keyMap[key]) continue;
+        // HUD
+        HUD::GetInstance().OnKeyDown(i-1);
         if (m_activeObjectLists[i-1].empty()) continue;
+        // Key
         for (auto& object : m_activeObjectLists[i-1]) {
             if (object->IsAvailable()) {
                 object->OnKeyDown();
                 break;
             }
         }
+
     }
 
     // skip the front space of the music
@@ -65,7 +74,10 @@ void Game::OnKeyUp(int keyCode)
     for (int i=1; i<=m_beatmap->GetTotalColumns(); ++i) {
         std::string key=std::to_string(m_beatmap->GetTotalColumns())+"k"+std::to_string(i);
         if (keyCode!=constant::keyMap[key]) continue;
+        // HUD
+        HUD::GetInstance().OnKeyUp(i-1);
         if (m_activeObjectLists[i-1].empty()) continue;
+        // Key
         for (auto& object : m_activeObjectLists[i-1]) {
             if (object->IsAvailable()) {
                 object->OnKeyUp();
