@@ -29,7 +29,7 @@ void Hold::OnKeyUp()
 
 void Hold::Update() 
 {
-    double deltaTime=game_data::gamePosition-m_lastUpdateTime;
+    double deltaTime=std::max(game_data::gamePosition-m_lastUpdateTime, 0.);
     if (m_isFirstKeyDown && m_isKeyDown) m_positionY=game_data::hitPosition*constant::kPixelScale;
     else m_positionY+=m_speed*deltaTime*game_data::scrollSpeedMultiplier;
     m_positionEndY+=m_speed*deltaTime*game_data::scrollSpeedMultiplier;

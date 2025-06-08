@@ -22,6 +22,7 @@ private:
     int m_firstObjectTime=0;
     int m_lastObjectTime=0;
     int m_timing=0;
+    bool m_isFirstLoop=1;
     std::unique_ptr<HitObject> m_nextHitObject;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> music;
     std::unique_ptr<BeatmapParser> m_beatmap;

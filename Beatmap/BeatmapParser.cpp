@@ -235,9 +235,9 @@ float BeatmapParser::GetNextTiming()
 
 void BeatmapParser::PushTiming() 
 {
-    if (m_baseBPM==-1) m_baseBPM=GetBPM(m_timingIter->beatLength);
     if (m_timingIter->uninherited) {
         int bpm=GetBPM(m_timingIter->beatLength);
+        if (m_baseBPM==-1) m_baseBPM=bpm;
         m_bpmMultipliler=bpm/m_baseBPM;
     }
     else {
@@ -296,8 +296,8 @@ float BeatmapParser::GetStartPosition(float perfectHitPosition, float deltaTime)
         }
         if (iter->uninherited) {
             int bpm=GetBPM(iter->beatLength);
-            if (m_baseBPM==-1) changingPoint.back().second=1;
-            else changingPoint.back().second=bpm/m_baseBPM;
+            if (m_baseBPM==-1) m_baseBPM=bpm;
+            changingPoint.back().second=bpm/m_baseBPM;
         }
         else {
             changingPoint.back().second=1./(-iter->beatLength/100.);

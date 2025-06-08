@@ -25,9 +25,10 @@ namespace game_data
     extern int hit300;
     extern int hit300H;
     extern int hit100;
-    extern int hit100H;
+    extern int hit200;
     extern int hit50;
     extern int miss;
+    extern int hp;
     extern float accuracy;
     extern double gamePosition;
     extern long long score;

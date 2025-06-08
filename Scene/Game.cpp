@@ -13,6 +13,8 @@
 #include <string>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_primitives.h>
+#include <chrono>
+#include <thread>
 
 void Game::Initialize() 
 {
@@ -32,7 +34,8 @@ void Game::Initialize()
         else m_nextHitObject=std::make_unique<HitObject>(HitObject(0, INT_MAX, 0, 0, ""));
     }
     HUD::GetInstance().Init();
-    music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, 0.f);
+    (void)Skin::GetInstance();
+    m_isFirstLoop=true;
     game_data::nowGameState=game_data::PLAYING;
 }
 
@@ -89,15 +92,17 @@ void Game::OnKeyUp(int keyCode)
 
 void Game::Update(float deltaTime)
 {
-    if (game_data::nowGameState==game_data::PAUSE) {
+    if (!m_isFirstLoop && game_data::nowGameState==game_data::PAUSE) {
         AudioHelper::StopSample(music);
         return;
     }
     int baseScore=(1000000 * game_data::modMultiplier * 0.5 / m_beatmap->GetTotalNotes()) * (game_data::hitValue / 320);
     int bonusScore=(1000000 * game_data::modMultiplier * 0.5 / m_beatmap->GetTotalNotes()) * (game_data::hitBonusValue * sqrt(game_data::hitBonus) / 320);
     game_data::score=baseScore+bonusScore;
-    int goalPosition=AudioHelper::GetSamplePosition(music);
     int droppedTiming=0;
+    int goalPosition=0;
+    if (!m_isFirstLoop) goalPosition=AudioHelper::GetSamplePosition(music);
+    // std::cout<<"goal: "<<goalPosition<<std::endl;
     while (m_beatmap->GetNextTiming()<=goalPosition) {
         droppedTiming++;
         game_data::gamePosition=m_beatmap->GetNextTiming();
@@ -107,6 +112,13 @@ void Game::Update(float deltaTime)
     if (droppedTiming>1) std::cout<<"Dropped: "<<droppedTiming-1<<std::endl;
     game_data::gamePosition=goalPosition;
     UpdateHitObjects();
+    if (m_isFirstLoop) {
+        Draw();
+        std::cout<<"isFirst: "<<game_data::gamePosition<<std::endl;
+        m_isFirstLoop=false;
+        al_flip_display();
+        music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, 0);
+    }
 }
 
 void Game::Draw() const
@@ -118,6 +130,7 @@ void Game::Draw() const
 
     for (auto& objectList : m_activeObjectLists) {
         for (auto& hitObject : objectList) {
+            if (hitObject->GetPositionY()<0) break;
             hitObject->Draw();
         }
     }
@@ -129,11 +142,11 @@ void Game::UpdateHitObjects()
     game_data::scrollSpeedMultiplier=m_beatmap->GetSpeedScale();
     for (auto& objectList : m_activeObjectLists) {
         if (objectList.empty()) continue;
-        for (auto& object : objectList) {
-            object->Update();
-        }
         if (objectList.size() && !objectList.front()->IsAlive()) {
             objectList.pop_front();
+        }
+        for (auto& object : objectList) {
+            object->Update();
         }
     }
 }

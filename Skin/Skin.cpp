@@ -14,8 +14,8 @@ Skin& Skin::GetInstance()
     static Skin instance{};
     return instance;
 }
- 
-Skin::Skin() 
+
+Skin::Skin()
 {
     std::ifstream skinFileStream(constant::kSkinPath+"/skin.ini");
     std::string token;
@@ -27,22 +27,59 @@ Skin::Skin()
 
         if (token=="[General]") {
             m_section=GENERAL;
-        }
-        else if (token=="[Colours]") {
+        } else if (token=="[Colours]") {
             m_section=-1;
-        }
-        else if (token=="[Fonts]") {
+        } else if (token=="[Fonts]") {
             m_section=FONTS;
-        }
-        else if (token=="[CatchTheBeat]") {
+        } else if (token=="[CatchTheBeat]") {
             m_section=-1;
-        }
-        else if (token=="[Mania]") {
+        } else if (token=="[Mania]") {
             m_section=MANIA;
-        }
-        else {
+        } else {
             Parse(token);
         }
+    }
+
+    // Init the pictures
+    for (int i=0; i<=9; ++i) {
+        std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-"+std::to_string(i)+".png";
+        Engine::Image image(filename, 0, 0, 0, 0, 1, 0);
+    }
+    {
+        std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-percent.png";
+        Engine::Image image(filename, 0, 0, 0, 0, 1, 0);
+    }
+    {
+        std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-dot.png";
+        Engine::Image image(filename, 0, 0, 0, 0, 1, 0);
+    }
+    for (int i=0; i<9; ++i) {
+        std::string filename=constant::kSkinPath+"\\"+m_comboPrefix+"-"+std::to_string(i)+".png";
+        Engine::Image image(filename, 0, 0, 0, 0, 1, 0);
+    }
+    {
+        std::string filename=constant::kSkinPath+"\\"+"mania-hit300g-0.png";
+        Engine::Image image(filename, 0, 0, 0, 0, 1, 0);
+    }
+    {
+        std::string filename=constant::kSkinPath+"\\"+"mania-hit300.png";
+        Engine::Image image(filename, 0, 0, 0, 0, 1, 0);
+    }
+    {
+        std::string filename=constant::kSkinPath+"\\"+"mania-hit200.png";
+        Engine::Image image(filename, 0, 0, 0, 0, 1, 0);
+    }
+    {
+        std::string filename=constant::kSkinPath+"\\"+"mania-hit100.png";
+        Engine::Image image(filename, 0, 0, 0, 0, 1, 0);
+    }
+    {
+        std::string filename=constant::kSkinPath+"\\"+"mania-hit50.png";
+        Engine::Image image(filename, 0, 0, 0, 0, 1, 0);
+    }
+    {
+        std::string filename=constant::kSkinPath+"\\"+"mania-hit0.png";
+        Engine::Image image(filename, 0, 0, 0, 0, 1, 0);
     }
 }
 
@@ -59,49 +96,36 @@ void Skin::Parse(const std::string& str)
         if (token=="AnimationFramerate") {
             if (stoi(value)==-1) return;
             m_animationFramerate=stoi(value);
-        }
-        else if (token=="ComboBurstRandom") {
+        } else if (token=="ComboBurstRandom") {
             m_comboBurstRandom=stoi(value);
-        }
-        else if (token=="CustomComboBurstSounds") {
+        } else if (token=="CustomComboBurstSounds") {
             m_customComboBurstSounds=value;
         }
-    }
-    else if (m_section==FONTS) {
+    } else if (m_section==FONTS) {
         if (token=="ScorePrefix") {
             m_scorePrefix=value;
-        }
-        else if (token=="ScoreOverlap") {
+        } else if (token=="ScoreOverlap") {
             m_scoreOverlap=stoi(value);
-        }
-        else if (token=="ComboPrefix") {
+        } else if (token=="ComboPrefix") {
             m_comboPrefix=value;
-        }
-        else if (token=="ComboOverlap") {
+        } else if (token=="ComboOverlap") {
             m_comboOverlap=stoi(value);
         }
-    }
-    else if (m_section==MANIA) {
+    } else if (m_section==MANIA) {
         if (token=="Keys") {
             m_keys=stoi(value);
             m_nkManiaSkin[m_keys];
-        }
-        else if (token=="ColumnStart") {
+        } else if (token=="ColumnStart") {
             m_nkManiaSkin[m_keys].columnStart=stof(value);
-        }
-        else if (token=="ColumnRight") {
+        } else if (token=="ColumnRight") {
             m_nkManiaSkin[m_keys].columnRight=stof(value);
-        }
-        else if (token=="ColumnSpacing") {
+        } else if (token=="ColumnSpacing") {
             m_nkManiaSkin[m_keys].columnSpacing=stof(value);
-        }
-        else if (token=="ColumnWidth") {
+        } else if (token=="ColumnWidth") {
             m_nkManiaSkin[m_keys].columnWidth=stof(value);
-        }
-        else if (token=="ColumnLineWidth") {
+        } else if (token=="ColumnLineWidth") {
             m_nkManiaSkin[m_keys].columnLineWidth=stof(value);
-        }
-        else if (token=="BarlineHeight") {
+        } else if (token=="BarlineHeight") {
             m_nkManiaSkin[m_keys].barLineHeight=stof(value);
         }
     }
@@ -127,14 +151,8 @@ void Skin::DrawScore(int score, float acc) const
     // Accuracy
     acc=acc*100;
     // Prevent the acc will be override after counting numDigits
-    float preAcc=acc;
     startX=constant::kScreenW;
-    int numDigits=0;
-    while ((int)acc) {
-        numDigits++;
-        acc=static_cast<int>(acc) / 10;
-    }
-    acc=preAcc;
+    int numDigits=CalNumDigits(static_cast<int>(acc));
     // percent
     {
         std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-percent.png";
@@ -153,11 +171,79 @@ void Skin::DrawScore(int score, float acc) const
         if (i==2) {
             std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-dot.png";
             Engine::Image image(filename, startX, startAccuracyY, 0, 0, 1, 0);
-            image.Position=Engine::Point{1.f*startX + (image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale)*2, (float)startAccuracyY};
-            startX-=(image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale)*3;
+            image.Position=Engine::Point{1.f*startX - std::max((image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale), 5.f)*2, (float)startAccuracyY};
+            startX-=std::max(image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale, 5.f)*3;
 
             image.Draw();
         }
         acc=static_cast<int>(acc)/10;
     }
+}
+
+void Skin::DrawCombo(int combo, float comboExpand) const
+{
+    int numDigits=CalNumDigits(combo);
+    int pictureWidth=0;
+    int pictureHeight=0;
+    {
+        std::string filename=constant::kSkinPath+"\\"+m_comboPrefix+"-0.png";
+        Engine::Image image(filename, 0, 0, 0, 0, 1, 0);
+        pictureWidth=image.GetBitmapWidth();
+        pictureHeight=image.GetBitmapHeight();
+    }
+    int startX=(pictureWidth - constant::kPixelScale*m_comboOverlap)*numDigits/2 + constant::kScreenW/2;
+    int digit=0;
+
+    for (int i=0; i<numDigits; ++i) {
+        digit=combo%10;
+        std::string filename=constant::kSkinPath+"\\"+m_comboPrefix+"-"+std::to_string(digit)+".png";
+        Engine::Image image(filename, startX, constant::kComboPosition*constant::kPixelScale, pictureWidth, pictureHeight*comboExpand, 0.5, 0.5);
+        startX-=image.GetBitmapWidth() - m_comboOverlap*constant::kPixelScale;
+        image.Draw();
+        combo/=10;
+    }
+}
+
+int Skin::CalNumDigits(int number) const
+{
+    int numDigits=0;
+    while (number) {
+        numDigits++;
+        number=number/10;
+    }
+    return numDigits;
+}
+void Skin::DrawHit(int val, float expand) const
+{
+    int pictureWidth=0;
+    int pictureHeight=0;
+    std::string filename;
+    switch (val)
+    {
+    case 320: 
+        filename=constant::kSkinPath+"\\"+"mania-hit300g-0.png";
+        break;
+    case 300: 
+        filename=constant::kSkinPath+"\\"+"mania-hit300.png";
+        break;
+    case 200: 
+        filename=constant::kSkinPath+"\\"+"mania-hit200.png";
+        break;
+    case 100: 
+        filename=constant::kSkinPath+"\\"+"mania-hit100.png";
+        break;
+    case 50: 
+        filename=constant::kSkinPath+"\\"+"mania-hit50.png";
+        break;
+    case 0: 
+        filename=constant::kSkinPath+"\\"+"mania-hit0.png";
+        break;
+    default:
+        return;
+    }
+    Engine::Image image(filename, constant::kScreenW/2, constant::kScorePosition*constant::kPixelScale, 0, 0, 0.5, 0.5);
+    pictureWidth=image.GetBitmapWidth();
+    pictureHeight=image.GetBitmapHeight();
+    Engine::Image imageScaled(filename, constant::kScreenW/2, constant::kScorePosition*constant::kPixelScale, pictureWidth*expand, pictureHeight*expand, 0.5, 0.5);
+    imageScaled.Draw();
 }

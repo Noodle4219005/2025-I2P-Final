@@ -58,7 +58,7 @@ add_executable(2025_I2P2_Final
     "Scene/Start.cpp"
 
     # Skin
-    "Skin/DummySkin.cpp" 
+     
     "Skin/Skin.cpp" 
     "Skin/Skin.h" 
 

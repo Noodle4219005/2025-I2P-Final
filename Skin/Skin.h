@@ -17,6 +17,8 @@ public:
     void DrawHold(int start, int end) const;
     void Draw(int start, int end) const;
     void DrawScore(int score, float acc) const;
+    void DrawCombo(int combo, float comboExpand) const;
+    void DrawHit(int val, float expand) const;
 private:
     enum Sections
     {
@@ -26,6 +28,7 @@ private:
     };
 
     void Parse(const std::string& str);
+    int CalNumDigits(int number) const;
 
     int m_section=-1;
 
@@ -58,8 +61,8 @@ private:
         float widthForNoteHeightScale; // Which height should all notes have if columns have individual widths?
         int hitPosition=402; // from 240 to 480
         int lightPosition=413; // On which height should the stage lights be drawn at?
-        int scorePosition;
-        int comboPosition;
+        int scorePosition; // the height score burst appear
+        int comboPosition; // the height combo appear
         int judgeLine=0;
         int lightFramePerSecond;
         int specialStyle=0;

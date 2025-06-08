@@ -5,6 +5,7 @@
 
 #include <allegro5/allegro_primitives.h>
 #include <iostream>
+#include <cmath>
 
 HUD& HUD::GetInstance()
 {
@@ -28,6 +29,8 @@ void HUD::Init()
     musicBarHeight = constant::kScreenH * 0.9f;
     decltype(isKeyPressed)().swap(isKeyPressed);
     isKeyPressed.assign(game_data::nkey, 0);
+    prevCombo=0;
+    prevHit300H=prevHit300=prevHit200=prevHit100=prevHit50=prevMiss=0;
 }
 
 void HUD::OnKeyDown(int column) 
@@ -59,6 +62,48 @@ void HUD::DrawForeground()
 
     // Draw score & acc
     Skin::GetInstance().DrawScore(game_data::score, game_data::accuracy);
+
+    // Draw Combo (magic number 0.2 is total seconds of the animation)
+    if (prevCombo<game_data::combo) comboAnimationTick=constant::kFPS*0.1;
+    comboAnimationTick=std::max(0, comboAnimationTick);
+    Skin::GetInstance().DrawCombo(game_data::combo, pow(1.5, 1.f*comboAnimationTick/(constant::kFPS*0.1)));
+    comboAnimationTick-=1;
+    prevCombo=game_data::combo;
+
+    // Draw score hit
+    if (prevHit300H!=game_data::hit300H) {
+        prevHit300H=game_data::hit300H;
+        drawHitValue=320;
+        hitvalueAnimationTick=kMaxHitvalueAnimationTick;
+    }
+    else if (prevHit300!=game_data::hit300) {
+        prevHit300=game_data::hit300;
+        drawHitValue=300;
+        hitvalueAnimationTick=kMaxHitvalueAnimationTick;
+    }
+    else if (prevHit200!=game_data::hit200) {
+        prevHit200=game_data::hit200;
+        drawHitValue=200;
+        hitvalueAnimationTick=kMaxHitvalueAnimationTick;
+    }
+    else if (prevHit100!=game_data::hit100) {
+        prevHit100=game_data::hit100;
+        drawHitValue=100;
+        hitvalueAnimationTick=kMaxHitvalueAnimationTick;
+    }
+    else if (prevHit50!=game_data::hit50) {
+        prevHit50=game_data::hit50;
+        drawHitValue=50;
+        hitvalueAnimationTick=kMaxHitvalueAnimationTick;
+    }
+    else if (prevMiss!=game_data::miss) {
+        prevMiss=game_data::miss;
+        drawHitValue=0;
+        hitvalueAnimationTick=kMaxHitvalueAnimationTick;
+    }
+    hitvalueAnimationTick=std::max(0, hitvalueAnimationTick);
+    if (hitvalueAnimationTick>0) Skin::GetInstance().DrawHit(drawHitValue, pow(1.5, 1.f*hitvalueAnimationTick/kMaxHitvalueAnimationTick));
+    hitvalueAnimationTick-=1;
 
     // playtime
     al_draw_line(0, constant::kScreenH, constant::kScreenW * (game_data::gamePosition/game_data::playtimeLength), constant::kScreenH, al_map_rgba(0, 255, 0, 150), constant::kPlaytimeLineThickness*2);

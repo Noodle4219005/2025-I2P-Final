@@ -31,6 +31,8 @@ namespace constant
     const int kHitlineThickness=5;
     const int kBorderlineThickness=5;
     const int kPlaytimeLineThickness=10;
+    const int kComboPosition=240;
+    const int kScorePosition=150;
 
     const int kMaxScore=1000000;
 }
