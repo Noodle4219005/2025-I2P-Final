@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 // Watch out, the bitmap bottom hit the line is the zero point.
 
@@ -268,4 +269,142 @@ void Skin::DrawFailed() const
     Engine::Image image(filename, 0, 0, constant::kScreenW, constant::kScreenH, 0, 0);
     image.Draw();
 
+}
+
+void Skin::DrawMod(int selection) const
+{
+    int startX=constant::kScreenW;
+    int positionY=constant::kModSeletionPosition*constant::kPixelScale;
+    if (selection&1) {
+        std::string filename=constant::kSkinPath+'/'+"selection-mod-autoplay.png";
+        Engine::Image image(filename, startX, positionY, 
+                            0, 0, 1, 0);
+        startX-=image.GetBitmapWidth();
+        image.Draw();
+    }
+    if (selection&2) {
+        std::string filename=constant::kSkinPath+'/'+"selection-mod-doubletime.png";
+        Engine::Image image(filename, startX, positionY, 
+                            0, 0, 1, 0);
+        startX-=image.GetBitmapWidth();
+        image.Draw();
+    }
+    if (selection&4) {
+        std::string filename=constant::kSkinPath+'/'+"selection-mod-nofail.png";
+        Engine::Image image(filename, startX, positionY, 
+                            0, 0, 1, 0);
+        startX-=image.GetBitmapWidth();
+        image.Draw();
+    }
+}
+
+void Skin::DrawRankingPanel() const 
+{
+    std::string filename=constant::kSkinPath+'/'+"ranking-panel.png";
+    Engine::Image image(filename, 0, 0, 
+                        constant::kScreenW, constant::kScreenH, 0, 0);
+    image.Draw();
+}
+
+void Skin::DrawRankingScore(int score, int x, int y) const
+{
+    int digit;
+    int count=constant::kMaxScore;
+    int startX=x*constant::kPixelScale;
+    std::vector<int> scoreStack;
+    // Score
+    for (int i=count; i>0; i/=10) {
+        digit=score%10;
+        scoreStack.push_back(digit);
+        score/=10;
+    }
+    for (int i=count; i>0; i/=10) {
+        digit=scoreStack.back(); scoreStack.pop_back();
+        std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-"+std::to_string(digit)+"@2x.png";
+        Engine::Image image(filename, startX, y*constant::kPixelScale, 0, 0, 0, 0);
+        startX+=image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale;
+        image.Draw();
+    }
+}
+
+void Skin::DrawRankingNumber(int number, int x, int y) const
+{
+    int digit;
+    int numDigits=std::max(CalNumDigits(number), 1);
+    int count=constant::kMaxScore;
+    int startX=constant::kOffsetX+x*constant::kPixelScale;
+    std::string numString=std::to_string(number);
+    // Score
+    for (int i=0; i<numDigits; ++i) {
+        int digit=numString[i]-'0';
+        std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-"+std::to_string(digit)+".png";
+        Engine::Image image(filename, startX, y*constant::kPixelScale, 0, 0, 0, 0.5);
+        startX+=image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale;
+        image.Draw();
+    }
+    std::string filename=constant::kSkinPath+"\\"+"score-x.png";
+    Engine::Image image(filename, startX, y*constant::kPixelScale, 0, 0, 0, 0.5);
+    image.Draw();
+}
+
+void Skin::DrawRankingAccuracy(float acc) const
+{
+    // Accuracy
+    acc=acc*100;
+    int digit=0;
+    int startX=constant::kOffsetX+250*constant::kPixelScale; // 300 osu pixels
+    int numDigits=CalNumDigits(static_cast<int>(acc));
+    // percent
+    {
+        std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-percent@2x.png";
+        Engine::Image image(filename, startX, constant::kRankingMaxComboPosition*constant::kPixelScale, 0, 0, 1, 0);
+        startX-=image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale;
+        image.Draw();
+    }
+    for (int i=1; i<=5; ++i) {
+        digit=static_cast<int>(acc)%10;
+        if (i>numDigits && i>=4) break;
+        std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-"+std::to_string(digit)+"@2x.png";
+        Engine::Image image(filename, startX, constant::kRankingMaxComboPosition*constant::kPixelScale, 0, 0, 1, 0);
+        startX-=image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale;
+        image.Draw();
+        // dot
+        if (i==2) {
+            std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-dot@2x.png";
+            Engine::Image image(filename, startX, constant::kRankingMaxComboPosition*constant::kPixelScale, 0, 0, 1, 0);
+            image.Position=Engine::Point{1.f*startX - std::max((image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale), 5.f)*2, (float)constant::kRankingMaxComboPosition*constant::kPixelScale};
+            startX-=std::max(image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale, 5.f)*3;
+
+            image.Draw();
+        }
+        acc=static_cast<int>(acc)/10;
+    }
+
+}
+
+void Skin::DrawRankingMod(int selection) const
+{
+    int startX=constant::kScreenW-125*constant::kPixelScale;
+    int positionY=constant::kRankingModPosition*constant::kPixelScale;
+    if (selection&1) {
+        std::string filename=constant::kSkinPath+'/'+"selection-mod-autoplay.png";
+        Engine::Image image(filename, startX, positionY, 
+                            0, 0, 1, 0);
+        startX-=image.GetBitmapWidth();
+        image.Draw();
+    }
+    if (selection&2) {
+        std::string filename=constant::kSkinPath+'/'+"selection-mod-doubletime.png";
+        Engine::Image image(filename, startX, positionY, 
+                            0, 0, 1, 0);
+        startX-=image.GetBitmapWidth();
+        image.Draw();
+    }
+    if (selection&4) {
+        std::string filename=constant::kSkinPath+'/'+"selection-mod-nofail.png";
+        Engine::Image image(filename, startX, positionY, 
+                            0, 0, 1, 0);
+        startX-=image.GetBitmapWidth();
+        image.Draw();
+    }
 }

@@ -34,7 +34,7 @@ private:
     std::chrono::steady_clock::time_point m_prevTimestamp;
     std::vector<std::chrono::steady_clock::time_point> m_prevAutoClicked;
     std::unique_ptr<HitObject> m_nextHitObject;
-    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> music;
+    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> m_music;
     std::unique_ptr<BeatmapParser> m_beatmap;
     std::vector<std::list<std::unique_ptr<HitObject>>> m_activeObjectLists; // the object which is now need to be processed
     std::unique_ptr<Engine::ImageButton> m_continueButton;

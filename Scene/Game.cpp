@@ -43,8 +43,8 @@ void Game::Initialize()
     (void)Skin::GetInstance();
 
     // Init timing and music playint
-    music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, 0);
-    AudioHelper::StopSample(music);
+    m_music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, 0);
+    AudioHelper::StopSample(m_music);
     m_prevTimestamp=std::chrono::steady_clock::now();
     m_goalPosition=game_data::gamePosition=-constant::kHitobjectPreviewThreshold;
     m_isPlayed=false;
@@ -96,6 +96,7 @@ void Game::Terminate()
     if (game_data::isDoubleTime) {
         game_data::scrollSpeed*=1.5;
     }
+    AudioHelper::StopSample(m_music);
     m_beatmap.release();
     m_activeObjectLists.clear();
 }
@@ -109,7 +110,7 @@ void Game::OnKeyDown(int keyCode)
     if (game_data::gamePosition<(m_firstObjectTime-constant::kSkipTimeThreshold) && keyCode==constant::keyMap["skip"]) {
         std::cout<<"Skipped\n";
         m_prevTimestamp=std::chrono::steady_clock().now();
-        AudioHelper::ChangeSamplePosition(music, m_firstObjectTime-constant::kSkipTimeThreshold);
+        AudioHelper::ChangeSamplePosition(m_music, m_firstObjectTime-constant::kSkipTimeThreshold);
     }
 
     // pause the music
@@ -198,9 +199,9 @@ void Game::Update(float deltaTime)
         m_retryButton->Update(deltaTime);
         m_backButton->Update(deltaTime);
         if (m_isPlayed) {
-            AudioHelper::StopSample(music);
+            AudioHelper::StopSample(m_music);
             std::cout<<al_filename_exists((constant::kSkinPath+'/'+"pause-loop.wav").c_str());
-            music=AudioHelper::PlaySample(constant::kSkinPath+'/'+"pause-loop.wav", true, AudioHelper::BGMVolume, 0);
+            m_music=AudioHelper::PlaySample(constant::kSkinPath+'/'+"pause-loop.wav", true, AudioHelper::BGMVolume, 0);
             m_isPlayed=false;
         }
         return;
@@ -210,9 +211,9 @@ void Game::Update(float deltaTime)
         m_retryButton->Update(deltaTime);
         m_backButton->Update(deltaTime);
         if (m_isPlayed) {
-            AudioHelper::StopSample(music);
+            AudioHelper::StopSample(m_music);
             std::cout<<al_filename_exists((constant::kSkinPath+'/'+"failsound.mp3").c_str());
-            music=AudioHelper::PlaySample(constant::kSkinPath+'/'+"failsound.mp3", true, AudioHelper::BGMVolume, 0);
+            m_music=AudioHelper::PlaySample(constant::kSkinPath+'/'+"failsound.mp3", true, AudioHelper::BGMVolume, 0);
             m_isPlayed=false;
         }
         return;
@@ -225,7 +226,7 @@ void Game::Update(float deltaTime)
             if (m_activeObjectLists[i-1].empty()) continue;
             for (auto& object : m_activeObjectLists[i-1]) {
                 if (object->IsAvailable()) {
-                    if (game_data::gamePosition-object->GetStartTime()<-8) break;
+                    if (game_data::gamePosition-object->GetStartTime()<-10) break;
                     HUD::GetInstance().OnKeyDown(i-1);
                     object->OnKeyDown();
                     m_prevAutoClicked[i-1]=std::chrono::steady_clock().now();
@@ -245,7 +246,7 @@ void Game::Update(float deltaTime)
                     else HUD::GetInstance().OnKeyUp(i-1);
                 }
                 if (object->IsAvailable()) {
-                    if (object->GetType()&128 && game_data::gamePosition-object->GetEndTime()>=-8) {
+                    if (object->GetType()&128 && game_data::gamePosition-object->GetEndTime()>=-10) {
                         HUD::GetInstance().OnKeyUp(i-1);
                         object->OnKeyUp();
                     }
@@ -265,7 +266,7 @@ void Game::Update(float deltaTime)
     game_data::score=baseScore+bonusScore;
 
     int droppedTiming=0;
-    if (m_isPlayed) m_goalPosition=AudioHelper::GetSamplePosition(music) + game_data::offset;
+    if (m_isPlayed) m_goalPosition=AudioHelper::GetSamplePosition(m_music) + game_data::offset;
     else m_goalPosition+=1.f*std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()-m_prevTimestamp).count()/1000;
     m_prevTimestamp=std::chrono::steady_clock().now();
     // std::cout<<"Goal: "<<m_goalPosition<<std::endl;
@@ -277,8 +278,8 @@ void Game::Update(float deltaTime)
     }
     game_data::gamePosition=m_goalPosition;
     if (game_data::gamePosition>=0.f && !m_isPlayed) {
-        music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, game_data::gamePosition);
-        if (game_data::isDoubleTime) AudioHelper::ChangeSampleSpeed(music, 1.5);
+        m_music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, game_data::gamePosition);
+        if (game_data::isDoubleTime) AudioHelper::ChangeSampleSpeed(m_music, 1.5);
         m_isPlayed=true;
     }
     if (droppedTiming>1) std::cout<<"Dropped: "<<droppedTiming-1<<std::endl;
@@ -342,7 +343,7 @@ void Game::Retry()
 {
     game_data::nowGameState=game_data::PLAYING;
     m_prevTimestamp=std::chrono::steady_clock().now();
-    AudioHelper::StopSample(music);
+    AudioHelper::StopSample(m_music);
     Terminate();
     Initialize();
 }
@@ -351,10 +352,10 @@ void Game::ContinueGame()
 {
     game_data::nowGameState=game_data::PLAYING;
     m_prevTimestamp=std::chrono::steady_clock().now();
-    AudioHelper::StopSample(music);
+    AudioHelper::StopSample(m_music);
     if (game_data::gamePosition>=0) {
-        music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, game_data::gamePosition);
-        if (game_data::isDoubleTime) AudioHelper::ChangeSampleSpeed(music, 1.5);
+        m_music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, game_data::gamePosition);
+        if (game_data::isDoubleTime) AudioHelper::ChangeSampleSpeed(m_music, 1.5);
     }
     m_isPlayed=true;
 }

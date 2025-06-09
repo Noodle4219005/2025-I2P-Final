@@ -43,6 +43,7 @@ namespace constant
     const int kComboPosition=240;
     const int kScorePosition=150;
     const int kHitbarPosition=450;
+    const int kModSeletionPosition=100;
     const int kHitbarWidth=15;
 
     const int kPauseContinuePosition=200;
@@ -52,4 +53,14 @@ namespace constant
     const int kAutoDelay=38; // in ms;
 
     const int kMaxScore=1000000;
+
+    // For ranking
+    const int kRankingScorePositionY=20;
+    const int kRankingScorePositionX=50;
+    const int kRankingResultsPosition=120;
+    const int kRankingMaxComboPosition=325;
+    const int kRankingAccuracyPosition=250;
+    const int kRankingSignPosition=150;
+    const int kRankingModPosition=200;
+
 }

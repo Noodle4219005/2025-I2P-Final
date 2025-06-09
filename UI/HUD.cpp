@@ -64,7 +64,7 @@ void HUD::DrawForeground()
     // Draw score & acc
     Skin::GetInstance().DrawScore(game_data::score, game_data::accuracy);
 
-    // Draw Combo (magic number 0.2 is total seconds of the animation)
+    // Draw Combo (magic number 0.1 is total seconds of the animation)
     if (prevCombo<game_data::combo) comboAnimationTick=constant::kFPS*0.1;
     comboAnimationTick=std::max(0, comboAnimationTick);
     Skin::GetInstance().DrawCombo(game_data::combo, pow(1.5, 1.f*comboAnimationTick/(constant::kFPS*0.1)));
@@ -165,6 +165,13 @@ void HUD::DrawForeground()
                             screenMiddleX+avergeHitError-25, constant::kHitbarPosition*constant::kPixelScale-20,
                             screenMiddleX+avergeHitError+25, constant::kHitbarPosition*constant::kPixelScale-20,
                             al_map_rgb(255, 255, 255));
+
+    // Mode Selection
+    int selection=0;
+    if (game_data::isAuto) selection+=1;
+    if (game_data::isDoubleTime) selection+=2;
+    if (game_data::isNoFailed) selection+=4;
+    Skin::GetInstance().DrawMod(selection);
 }
 
 void HUD::DrawBackground() 

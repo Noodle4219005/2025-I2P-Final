@@ -32,6 +32,7 @@ namespace constant
     extern const int kComboPosition;
     extern const int kScorePosition;
     extern const int kHitbarPosition;
+    extern const int kModSeletionPosition;
     extern const int kHitbarWidth;
 
     extern const int kPauseContinuePosition;
@@ -41,4 +42,13 @@ namespace constant
     extern const int kAutoDelay; // in ms;
 
     extern const int kMaxScore;
+
+    // For ranking
+    extern const int kRankingScorePositionY;
+    extern const int kRankingScorePositionX;
+    extern const int kRankingResultsPosition;
+    extern const int kRankingMaxComboPosition;
+    extern const int kRankingAccuracyPosition;
+    extern const int kRankingSignPosition;
+    extern const int kRankingModPosition;
 }

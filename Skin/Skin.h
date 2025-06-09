@@ -22,6 +22,36 @@ public:
     void DrawPlaySkip() const;
     void DrawPause() const;
     void DrawFailed() const;
+    void DrawMod(int selection) const;
+    void DrawRankingPanel() const;
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="score"></param>
+    /// <param name="x"> 
+    /// the leftmost x axis of the score, 
+    /// the input value should be in osu pixel
+    /// </param>
+    /// <param name="y"> 
+    /// the leftmost y axis of the score, 
+    /// the input value should be in osu pixel
+    /// </param>
+    void DrawRankingScore(int score, int x, int y) const;
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="number"></param>
+    /// <param name="x"> 
+    /// the leftmost x axis of the score, 
+    /// the input value should be in osu pixel
+    /// </param>
+    /// <param name="y"> 
+    /// the leftmost y axis of the score, 
+    /// the input value should be in osu pixel
+    /// </param>
+    void DrawRankingNumber(int number, int x, int y) const;
+    void DrawRankingAccuracy(float acc) const;
+    void DrawRankingMod(int selection) const;
 private:
     enum Sections
     {
