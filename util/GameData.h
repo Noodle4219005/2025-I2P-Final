@@ -65,7 +65,6 @@ namespace game_data
     extern bool isAuto;
     extern bool isNoFailed;
     extern bool isDoubleTime;
-    extern bool isHidden;
 
     float GetScrollMilisecond();
 }

@@ -64,9 +64,9 @@ namespace Engine {
 
         // Setup update timer.
         update_timer = al_create_timer(1.0f / fps);
-        fast_timer=al_create_timer(.0001f);
+        // fast_timer=al_create_timer(.0001f);
         if (!update_timer) throw Allegro5Exception("failed to create timer");
-        if (!fast_timer) throw Allegro5Exception("failed to create timer");
+        // if (!fast_timer) throw Allegro5Exception("failed to create timer");
 
         // Setup event queue.
         event_queue = al_create_event_queue();
@@ -79,14 +79,14 @@ namespace Engine {
         // Register display, timer, keyboard, mouse events to the event queue.
         al_register_event_source(event_queue, al_get_display_event_source(display));
         al_register_event_source(event_queue, al_get_timer_event_source(update_timer));
-        al_register_event_source(event_queue, al_get_timer_event_source(fast_timer));
+        // al_register_event_source(event_queue, al_get_timer_event_source(fast_timer));
         al_register_event_source(event_queue, al_get_keyboard_event_source());
         al_register_event_source(event_queue, al_get_mouse_event_source());
         // Can register other event sources, such as timer, video, ...
 
         // Start the timer to update and draw the game.
         al_start_timer(update_timer);
-        al_start_timer(fast_timer);
+        // al_start_timer(fast_timer);
     }
     void GameEngine::startEventLoop() {
         bool done = false;
@@ -107,8 +107,8 @@ namespace Engine {
                 if (event.timer.source == update_timer)
                     // The redraw timer has ticked.
                     redraws++;
-                if (event.timer.source == fast_timer)
-                    updates++;
+                //if (event.timer.source == fast_timer)
+                //    updates++;
                 break;
             case ALLEGRO_EVENT_KEY_DOWN:
                 // Event for keyboard key down.
@@ -158,15 +158,11 @@ namespace Engine {
             // Can process more events and call callbacks by adding more cases.
 
             // Update in every cycle
-            if (updates>0) {
-                if (updates > 1)
-                    LOG(VERBOSE) << updates - 1 << " frame(s) dropped";
-                auto nextTimestamp = std::chrono::steady_clock::now();
-                std::chrono::duration<float> timeElapsed = nextTimestamp - timestamp;
-                timestamp = nextTimestamp;
-                // Update and draw the next frame.
-                update(timeElapsed.count());
-            }
+            auto nextTimestamp = std::chrono::steady_clock::now();
+            std::chrono::duration<float> timeElapsed = nextTimestamp - timestamp;
+            timestamp = nextTimestamp;
+            // Update and draw the next frame.
+            update(timeElapsed.count());
 
             // Redraw the scene.
             if (redraws > 0 && al_is_event_queue_empty(event_queue)) {
@@ -192,7 +188,6 @@ namespace Engine {
     void GameEngine::destroy() {
         // Destroy allegro5 window resources.
         al_destroy_timer(update_timer);
-        al_destroy_timer(fast_timer);
         al_destroy_event_queue(event_queue);
         al_destroy_display(display);
         // Free all scenes.

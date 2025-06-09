@@ -8,6 +8,13 @@ namespace constant
         {"4k2", ALLEGRO_KEY_F},
         {"4k3", ALLEGRO_KEY_J},
         {"4k4", ALLEGRO_KEY_K},
+        {"7k1", ALLEGRO_KEY_S},
+        {"7k2", ALLEGRO_KEY_D},
+        {"7k3", ALLEGRO_KEY_F},
+        {"7k4", ALLEGRO_KEY_SPACE},
+        {"7k5", ALLEGRO_KEY_J},
+        {"7k6", ALLEGRO_KEY_K},
+        {"7k7", ALLEGRO_KEY_L},
         {"skip", ALLEGRO_KEY_SPACE},
         {"pause", ALLEGRO_KEY_ESCAPE}
     };
@@ -24,7 +31,7 @@ namespace constant
     const float kPixelScale=1.f*kScreenH/480;
     const int kOffsetX=(kScreenW-kPixelScale*kGameMaxPixelX)/2;
 
-    const int kHitobjectPreviewThreshold=2500; // ms
+    const int kHitobjectPreviewThreshold=1000; // ms
     const int kSkipTimeThreshold=5000+kHitobjectPreviewThreshold; // ms
 
     const int kBlockWidth=75;
@@ -42,7 +49,7 @@ namespace constant
     const int kPauseRetryPosition=300;
     const int kPauseBackPosition=400;
 
-    const int kAutoDelay=125; // in ms;
+    const int kAutoDelay=38; // in ms;
 
     const int kMaxScore=1000000;
 }

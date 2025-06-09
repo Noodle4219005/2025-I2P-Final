@@ -178,7 +178,7 @@ void BeatmapParser::Parse(const std::string& str)
                 getline(iss, token, ',');
                 yOffset=stoi(token);
             }
-            m_backgroundImage=std::make_shared<Engine::Image>(Engine::Image(m_beatmapPath+'/'+filename, xOffset*constant::kPixelScale, yOffset*constant::kPixelScale, 0, constant::kScreenW, 0, 0));
+            m_backgroundImage=std::make_shared<Engine::Image>(Engine::Image(m_beatmapPath+'/'+filename, xOffset*constant::kPixelScale, yOffset*constant::kPixelScale, constant::kScreenW, 0, 0, 0));
         }
         else if (token=="1" || token=="Video") {
         }

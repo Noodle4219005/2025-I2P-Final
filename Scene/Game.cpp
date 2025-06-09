@@ -21,7 +21,9 @@ void Game::Initialize()
     game_data::Refresh();
     game_data::nowGameState=game_data::LOADING;
     m_beatmap=std::make_unique<BeatmapParser>(BeatmapParser(game_data::mapID, game_data::difficultyName));
-    //AudioHelper::ChangeSampleSpeed(music, 1);
+    if (game_data::isDoubleTime) {
+        game_data::scrollSpeed/=1.5;
+    }
     
     // Load in the object list
     m_activeObjectLists=std::vector<std::list<std::unique_ptr<HitObject>>>(m_beatmap->GetTotalColumns());
@@ -91,6 +93,9 @@ void Game::Initialize()
 
 void Game::Terminate()
 {
+    if (game_data::isDoubleTime) {
+        game_data::scrollSpeed*=1.5;
+    }
     m_beatmap.release();
     m_activeObjectLists.clear();
 }
@@ -220,7 +225,7 @@ void Game::Update(float deltaTime)
             if (m_activeObjectLists[i-1].empty()) continue;
             for (auto& object : m_activeObjectLists[i-1]) {
                 if (object->IsAvailable()) {
-                    if (game_data::gamePosition-object->GetStartTime()<0) break;
+                    if (game_data::gamePosition-object->GetStartTime()<-8) break;
                     HUD::GetInstance().OnKeyDown(i-1);
                     object->OnKeyDown();
                     m_prevAutoClicked[i-1]=std::chrono::steady_clock().now();
@@ -240,7 +245,7 @@ void Game::Update(float deltaTime)
                     else HUD::GetInstance().OnKeyUp(i-1);
                 }
                 if (object->IsAvailable()) {
-                    if (object->GetType()&128 && game_data::gamePosition-object->GetEndTime()>=0) {
+                    if (object->GetType()&128 && game_data::gamePosition-object->GetEndTime()>=-8) {
                         HUD::GetInstance().OnKeyUp(i-1);
                         object->OnKeyUp();
                     }
@@ -273,6 +278,7 @@ void Game::Update(float deltaTime)
     game_data::gamePosition=m_goalPosition;
     if (game_data::gamePosition>=0.f && !m_isPlayed) {
         music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, game_data::gamePosition);
+        if (game_data::isDoubleTime) AudioHelper::ChangeSampleSpeed(music, 1.5);
         m_isPlayed=true;
     }
     if (droppedTiming>1) std::cout<<"Dropped: "<<droppedTiming-1<<std::endl;
@@ -297,6 +303,7 @@ void Game::Draw() const
             hitObject->Draw();
         }
     }
+
     if (game_data::gamePosition<(m_firstObjectTime-constant::kSkipTimeThreshold)) {
         Skin::GetInstance().DrawPlaySkip();
     }
@@ -345,7 +352,10 @@ void Game::ContinueGame()
     game_data::nowGameState=game_data::PLAYING;
     m_prevTimestamp=std::chrono::steady_clock().now();
     AudioHelper::StopSample(music);
-    if (game_data::gamePosition>=0) music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, game_data::gamePosition);
+    if (game_data::gamePosition>=0) {
+        music=AudioHelper::PlaySample(m_beatmap->GetAudioFilePath(), false, AudioHelper::BGMVolume, game_data::gamePosition);
+        if (game_data::isDoubleTime) AudioHelper::ChangeSampleSpeed(music, 1.5);
+    }
     m_isPlayed=true;
 }
 

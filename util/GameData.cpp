@@ -25,8 +25,8 @@ namespace game_data
 
     int nowGameState=LOADING;
 
-    long long mapID=94504;
-    std::string difficultyName="Hard"; // which difficulty
+    long long mapID=1417314;
+    std::string difficultyName="We are Forever Friends"; // which difficulty
     float starRate=0;
     float OD=0;
     int nkey=7;
@@ -40,14 +40,13 @@ namespace game_data
     float playtimeLength=0;
     float hitbarScale=3;
 
-    float offset=10;
+    float offset=0;
     float backgroundDim=0.5;
 
     // Mode
     bool isAuto=true;
-    bool isNoFailed=true;
+    bool isNoFailed=false;
     bool isDoubleTime=false;
-    bool isHidden=false;
 
     void Refresh() 
     {
