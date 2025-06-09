@@ -97,7 +97,7 @@ unsigned int AudioHelper::GetSampleLength(std::shared_ptr<ALLEGRO_SAMPLE_INSTANC
 /* @return now sample position in milisecond */
 double AudioHelper::GetSamplePosition(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sampleInstance) 
 {
-    return 1. * al_get_sample_instance_position(sampleInstance.get()) / al_get_sample_instance_frequency(sampleInstance.get()) * 1000 + game_data::offset;
+    return 1. * al_get_sample_instance_position(sampleInstance.get()) / al_get_sample_instance_frequency(sampleInstance.get()) * 1000;
 }
 
 void AudioHelper::StopSample(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance) {

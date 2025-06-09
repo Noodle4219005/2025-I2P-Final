@@ -34,5 +34,11 @@ namespace constant
     extern const int kHitbarPosition;
     extern const int kHitbarWidth;
 
+    extern const int kPauseContinuePosition;
+    extern const int kPauseRetryPosition;
+    extern const int kPauseBackPosition;
+
+    extern const int kAutoDelay; // in ms;
+
     extern const int kMaxScore;
 }

@@ -25,20 +25,20 @@ void Node::Draw() const
     if (game_data::nkey%2!=0 && m_column==game_data::nkey/2) {
         color=al_map_rgba(255, 255, 0, a);
     }
-    else if (m_column<game_data::nkey/2) {
+    else if (m_column < (game_data::nkey/2)) {
         if (m_column%2) { 
-            color=al_map_rgba(255, 255, 255, a);
+            color=al_map_rgba(0, 255, 255, a);
         }
         else {
-            color=al_map_rgba(0, 255, 255, a);
+            color=al_map_rgba(255, 255, 255, a);
         }
     }
     else {
-        if (m_column%2) { 
-            color=al_map_rgba(0, 255, 255, a);
+        if ((m_column + game_data::nkey%2)%2) {
+            color=al_map_rgba(255, 255, 255, a);
         }
         else {
-            color=al_map_rgba(255, 255, 255, a);
+            color=al_map_rgba(0, 255, 255, a);
         }
     }
     al_draw_rectangle(startX + m_column*constant::kBlockWidth, m_positionY, 

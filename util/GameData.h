@@ -59,6 +59,13 @@ namespace game_data
     extern float hitbarScale;
 
     extern float offset; // in ms
+    extern float backgroundDim;
+
+    // Mode
+    extern bool isAuto;
+    extern bool isNoFailed;
+    extern bool isDoubleTime;
+    extern bool isHidden;
 
     float GetScrollMilisecond();
 }

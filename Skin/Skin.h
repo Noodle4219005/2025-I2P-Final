@@ -21,6 +21,7 @@ public:
     void DrawHit(int val, float expand) const;
     void DrawPlaySkip() const;
     void DrawPause() const;
+    void DrawFailed() const;
 private:
     enum Sections
     {

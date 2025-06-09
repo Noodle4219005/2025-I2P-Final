@@ -54,8 +54,11 @@ add_executable(2025_I2P2_Final
     "Scene/Game.cpp" 
     "Scene/Game.h"
     "Scene/Menu.cpp" 
+    "Scene/Menu.h"
     "Scene/RankingPanel.cpp" 
+    "Scene/RankingPanel.h"
     "Scene/Start.cpp"
+    "Scene/Start.h"
 
     # Skin
      
@@ -86,7 +89,7 @@ add_executable(2025_I2P2_Final
 
     main.cpp
 
-)
+ )
 
 find_package(allegro CONFIG REQUIRED)
 target_link_libraries(2025_I2P2_Final Allegro::allegro Allegro::allegro_main Allegro::allegro_font Allegro::allegro_dialog 

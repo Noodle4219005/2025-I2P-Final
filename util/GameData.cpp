@@ -25,11 +25,11 @@ namespace game_data
 
     int nowGameState=LOADING;
 
-    long long mapID=323493;
-    std::string difficultyName="Lv.04"; // which difficulty
+    long long mapID=94504;
+    std::string difficultyName="Hard"; // which difficulty
     float starRate=0;
     float OD=0;
-    int nkey=4;
+    int nkey=7;
     float speed=1;
     float scrollSpeed=22;
     float scrollSpeedMultiplier=1.;
@@ -40,7 +40,14 @@ namespace game_data
     float playtimeLength=0;
     float hitbarScale=3;
 
-    float offset=0;
+    float offset=10;
+    float backgroundDim=0.5;
+
+    // Mode
+    bool isAuto=true;
+    bool isNoFailed=true;
+    bool isDoubleTime=false;
+    bool isHidden=false;
 
     void Refresh() 
     {

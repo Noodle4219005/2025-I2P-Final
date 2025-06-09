@@ -22,7 +22,7 @@ HUD::HUD()
 void HUD::Init()
 {
     screenMiddleX=constant::kScreenW/2;
-    startX=screenMiddleX - constant::kBlockWidth*(game_data::nkey/2);
+    startX=screenMiddleX - constant::kBlockWidth*(game_data::nkey/2) - ((game_data::nkey%2)?(constant::kBlockWidth/2):(0));
     playFieldWidth=constant::kBlockWidth*(game_data::nkey);
     musicBarX = constant::kScreenW * 0.01f;
     musicBarY = constant::kScreenH * 0.05f;

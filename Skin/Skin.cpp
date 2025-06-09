@@ -257,4 +257,15 @@ void Skin::DrawPlaySkip() const
 
 void Skin::DrawPause() const
 {
+    std::string filename=constant::kSkinPath+'/'+"pause-overlay.png";
+    Engine::Image image(filename, 0, 0, constant::kScreenW, constant::kScreenH, 0, 0);
+    image.Draw();
+}
+
+void Skin::DrawFailed() const
+{
+    std::string filename=constant::kSkinPath+'/'+"fail-background.png";
+    Engine::Image image(filename, 0, 0, constant::kScreenW, constant::kScreenH, 0, 0);
+    image.Draw();
+
 }

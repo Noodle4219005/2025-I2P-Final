@@ -2,6 +2,7 @@
 #include "Objects/Hold.h"
 #include "Objects/Node.h"
 #include "Engine/LOG.hpp"
+#include "UI/Component/Image.hpp"
 #include "util/GameData.h"
 #include "util/Constant.h"
 
@@ -58,7 +59,7 @@ BeatmapParser::BeatmapParser(const int& beatmapID, const std::string& difficulty
         if (token.empty()) continue;
         while (token.front()==' ') token=token.substr(1, token.size()-1);
         if (token[0]=='/'&&token[1]=='/') continue;
-        std::cout<<token<<std::endl;
+        // std::cout<<token<<std::endl;
 
         if (token=="[General]") {
             m_section=GENERAL;
@@ -158,6 +159,29 @@ void BeatmapParser::Parse(const std::string& str)
         }
     }
     else if (m_section==EVENTS) {
+        std::istringstream iss(str);
+        std::string filename="";
+        int xOffset=0;
+        int yOffset=0;
+        // Get the event type
+        getline(iss, token, ',');
+        if (token=="0") {
+            getline(iss, token, ',');
+            getline(iss, token, ',');
+            filename=token;
+            if (filename.front()=='"' && filename.back()=='"') {
+                filename=filename.substr(1, filename.size()-2);
+            }
+            if (iss.str().size()) {
+                getline(iss, token, ',');
+                xOffset=stoi(token);
+                getline(iss, token, ',');
+                yOffset=stoi(token);
+            }
+            m_backgroundImage=std::make_shared<Engine::Image>(Engine::Image(m_beatmapPath+'/'+filename, xOffset*constant::kPixelScale, yOffset*constant::kPixelScale, 0, constant::kScreenW, 0, 0));
+        }
+        else if (token=="1" || token=="Video") {
+        }
     }
     else if (m_section==TIMING_POINTS) {
         std::istringstream iss(str);
@@ -314,4 +338,14 @@ float BeatmapParser::GetStartPosition(float perfectHitPosition, float deltaTime)
 int BeatmapParser::GetTotalNotes()
 {
     return m_nodeList.size();
+}
+
+std::shared_ptr<Engine::Image>& BeatmapParser::GetBackgroundImage()
+{
+    return m_backgroundImage;
+}
+
+bool BeatmapParser::IsVideoAvailable()
+{
+    return m_hasVideo;
 }

@@ -2,6 +2,7 @@
 
 #include "Objects/HitObject.h"
 #include "Engine/LOG.hpp"
+#include "UI/Component/Image.hpp"
 #include "util/GameData.h"
 
 #include <string>
@@ -22,9 +23,11 @@ public:
     float GetSpeedScale();
     float GetStartPosition(float perfectHitPosition, float deltaTime);
     std::unique_ptr<HitObject> GetNextHitObject();
+    std::shared_ptr<Engine::Image>& GetBackgroundImage();
     float GetNextTiming();
     void PushTiming();
     bool IsMapEnded();
+    bool IsVideoAvailable();
 
 private:
     enum Sections 
@@ -75,7 +78,8 @@ private:
     float m_OD=10;
 
     // Event
-    std::shared_ptr<ALLEGRO_BITMAP> backgroudImage;
+    std::shared_ptr<Engine::Image> m_backgroundImage;
+    bool m_hasVideo=false;
 
     // Timing Points
     std::list<Timing> m_timingList;

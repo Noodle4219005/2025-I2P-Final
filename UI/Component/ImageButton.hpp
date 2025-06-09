@@ -56,6 +56,11 @@ namespace Engine {
         /// <param name="mx">Mouse x coordinate in window space.</param>
         /// <param name="my">Mouse y coordinate in window space.</param>
         void OnMouseMove(int mx, int my) override;
+        void Draw() const override;
+    private:
+        std::string imgInName;
+        std::string imgOutName;
     };
+    
 }
 #endif   // IMAGEBUTTON_HPP

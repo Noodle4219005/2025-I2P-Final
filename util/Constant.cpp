@@ -8,12 +8,13 @@ namespace constant
         {"4k2", ALLEGRO_KEY_F},
         {"4k3", ALLEGRO_KEY_J},
         {"4k4", ALLEGRO_KEY_K},
-        {"skip", ALLEGRO_KEY_SPACE}
+        {"skip", ALLEGRO_KEY_SPACE},
+        {"pause", ALLEGRO_KEY_ESCAPE}
     };
 
     const std::string kSkinPath="./res/skin";
     
-    const int kFPS=120;
+    const int kFPS=60;
     const int kScreenW=1600;
     const int kScreenH=832;
 
@@ -23,8 +24,8 @@ namespace constant
     const float kPixelScale=1.f*kScreenH/480;
     const int kOffsetX=(kScreenW-kPixelScale*kGameMaxPixelX)/2;
 
-    const int kHitobjectPreviewThreshold=1500; // ms
-    const int kSkipTimeThreshold=5000-kHitobjectPreviewThreshold; // ms
+    const int kHitobjectPreviewThreshold=2500; // ms
+    const int kSkipTimeThreshold=5000+kHitobjectPreviewThreshold; // ms
 
     const int kBlockWidth=75;
     const int kBlockHeight=20;
@@ -36,6 +37,12 @@ namespace constant
     const int kScorePosition=150;
     const int kHitbarPosition=450;
     const int kHitbarWidth=15;
+
+    const int kPauseContinuePosition=200;
+    const int kPauseRetryPosition=300;
+    const int kPauseBackPosition=400;
+
+    const int kAutoDelay=125; // in ms;
 
     const int kMaxScore=1000000;
 }
