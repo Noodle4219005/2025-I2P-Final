@@ -21,7 +21,7 @@ namespace constant
 
     const std::string kSkinPath="./res/skin";
     
-    const int kFPS=60;
+    const int kFPS=120;
     const int kScreenW=1600;
     const int kScreenH=832;
 
@@ -62,5 +62,13 @@ namespace constant
     const int kRankingAccuracyPosition=250;
     const int kRankingSignPosition=150;
     const int kRankingModPosition=200;
+
+    // For menu
+    extern const ALLEGRO_COLOR kSongNotSelectedColor=al_map_rgb(0, 150, 255);
+    extern const ALLEGRO_COLOR kSongSelectedColor=al_map_rgb(255, 137, 244);
+    extern const ALLEGRO_COLOR kDiffNotSelectedColor=al_map_rgb(255, 175, 14);
+    extern const ALLEGRO_COLOR kDiffSelectedColor=al_map_rgb(255, 0, 0);
+    extern const int kBeatmapCardHeight=50;
+    extern const int kBeatmapCardWidth=550;
 
 }

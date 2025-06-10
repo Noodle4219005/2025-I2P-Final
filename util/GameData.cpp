@@ -25,8 +25,8 @@ namespace game_data
 
     int nowGameState=LOADING;
 
-    long long mapID=622946;
-    std::string difficultyName="MX"; // which difficulty
+    long long mapID=1417314;
+    std::string difficultyName="We are Forever Friends"; // which difficulty
     float starRate=0;
     float OD=0;
     int nkey=7;

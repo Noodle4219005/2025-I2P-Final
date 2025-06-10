@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 project(2025_I2P2_Final)
 
 set(CMAKE_CXX_STANDARD 20)
+set(ALLEGRO_VSYNC 2) # Turn off vsync
 
 include_directories(.)
 include_directories("Map")
@@ -89,7 +90,7 @@ add_executable(2025_I2P2_Final
 
     main.cpp
 
- )
+  "Beatmap/MapSet.cpp" "Beatmap/MapSet.h" "UI/Component/BeatmapCard.cpp" "UI/Component/BeatmapCard.h" "Beatmap/DifficultyCounter.cpp" "Beatmap/DifficultyCounter.h")
 
 find_package(allegro CONFIG REQUIRED)
 target_link_libraries(2025_I2P2_Final Allegro::allegro Allegro::allegro_main Allegro::allegro_font Allegro::allegro_dialog 

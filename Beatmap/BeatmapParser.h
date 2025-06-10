@@ -22,9 +22,14 @@ public:
     float GetBPM(float beatLength);
     float GetSpeedScale();
     float GetStartPosition(float perfectHitPosition, float deltaTime);
+    float GetNextTiming();
     std::unique_ptr<HitObject> GetNextHitObject();
     std::shared_ptr<Engine::Image>& GetBackgroundImage();
-    float GetNextTiming();
+    std::string GetTitle();
+    std::string GetAuthor();
+    std::string GetMapper();
+    float GetStarRate();
+    std::string GetDifficultyName();
     void PushTiming();
     bool IsMapEnded();
     bool IsVideoAvailable();
@@ -76,6 +81,7 @@ private:
     // Difficulty
     int m_totalColumns=0;
     float m_OD=10;
+    float m_starRate=0.;
 
     // Event
     std::shared_ptr<Engine::Image> m_backgroundImage;

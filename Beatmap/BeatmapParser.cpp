@@ -106,8 +106,8 @@ void BeatmapParser::Parse(const std::string& str)
     if (m_section==GENERAL || m_section==METADATA || m_section==DIFFICULTY) {
         std::istringstream iss(str);
         getline(iss, token, ':');
-        getline(iss, value, ' ');
         getline(iss, value);
+        if (value.size() && value.front()==' ') value=value.substr(1, value.size()-1);
     }
 
     if (m_section==GENERAL) {
@@ -348,4 +348,34 @@ std::shared_ptr<Engine::Image>& BeatmapParser::GetBackgroundImage()
 bool BeatmapParser::IsVideoAvailable()
 {
     return m_hasVideo;
+}
+
+std::string BeatmapParser::GetTitle() 
+{
+    return m_title;
+}
+
+std::string BeatmapParser::GetAuthor() 
+{
+    return m_artist;
+}
+
+std::string BeatmapParser::GetMapper() 
+{
+    return m_creator;
+}
+
+float BeatmapParser::GetStarRate()
+{
+    return m_starRate;
+}
+
+int BeatmapParser::GetPreviewTime()
+{
+    return m_previewTime;
+}
+
+std::string BeatmapParser::GetDifficultyName()
+{
+    return m_difficultyName;
 }

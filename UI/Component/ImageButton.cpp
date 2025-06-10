@@ -11,7 +11,11 @@
 namespace Engine {
     ImageButton::ImageButton(std::string img, std::string imgIn, float x, float y, float w, float h, float anchorX, float anchorY) : Image(img, x, y, w, h, anchorX, anchorY), imgOut(Resources::GetInstance().GetBitmap(img)), imgIn(Resources::GetInstance().GetBitmap(imgIn)) {
         Point mouse = GameEngine::GetInstance().GetMousePosition();
-        mouseIn = Collider::IsPointInBitmap(Point((mouse.x - Position.x) * GetBitmapWidth() / Size.x + Anchor.x * GetBitmapWidth(), (mouse.y - Position.y) * GetBitmapHeight() / Size.y + Anchor.y * GetBitmapHeight()), bmp);
+        // mouseIn = Collider::IsPointInBitmap(, bmp);
+        mouseIn = Collider::IsPointInRect(Point{(float)mouse.x, (float)mouse.y},
+                                          Point{Image::Position.x - GetBitmapWidth()*Anchor.x, Image::Position.y - GetBitmapHeight()*Anchor.y},
+                                          Point{(float)GetBitmapWidth(), (float)GetBitmapHeight()}
+                                          );
         imgInName=imgIn;
         imgOutName=img;
         if (!mouseIn || !Enabled) bmp = imgOut;
@@ -31,7 +35,11 @@ namespace Engine {
 
     void ImageButton::OnMouseMove(int mx, int my) {
         // mouseIn=Position.x<=mx && mx<=Position.x+GetBitmapWidth() && Position.y<=my && my<=Position.y+GetBitmapHeight();
-        mouseIn = Collider::IsPointInBitmap(Point((mx - Position.x) * GetBitmapWidth() / Size.x + Anchor.x * GetBitmapWidth(), (my - Position.y) * GetBitmapHeight() / Size.y + Anchor.y * GetBitmapHeight()), bmp);
+        // mouseIn = Collider::IsPointInBitmap(Point((mx - Position.x) * GetBitmapWidth() / Size.x + Anchor.x * GetBitmapWidth(), (my - Position.y) * GetBitmapHeight() / Size.y + Anchor.y * GetBitmapHeight()), bmp);
+        mouseIn = Collider::IsPointInRect(Point{(float)mx, (float)my},
+                                          Point{Image::Position.x - GetBitmapWidth()*Anchor.x, Image::Position.y - GetBitmapHeight()*Anchor.y},
+                                          Point{(float)GetBitmapWidth(), (float)GetBitmapHeight()}
+                                          );
         if (!mouseIn || !Enabled) bmp = imgOut;
         else bmp = imgIn;
     }

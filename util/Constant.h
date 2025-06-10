@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <allegro5/keycodes.h>
+#include <allegro5/color.h>
 
 namespace constant
 {
@@ -51,4 +52,12 @@ namespace constant
     extern const int kRankingAccuracyPosition;
     extern const int kRankingSignPosition;
     extern const int kRankingModPosition;
+
+    // For menu
+    extern const ALLEGRO_COLOR kSongNotSelectedColor;
+    extern const ALLEGRO_COLOR kSongSelectedColor;
+    extern const ALLEGRO_COLOR kDiffNotSelectedColor;
+    extern const ALLEGRO_COLOR kDiffSelectedColor;
+    extern const int kBeatmapCardHeight;
+    extern const int kBeatmapCardWidth;
 }

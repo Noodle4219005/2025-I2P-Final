@@ -266,7 +266,7 @@ void Game::Update(float deltaTime)
     game_data::score=baseScore+bonusScore;
 
     int droppedTiming=0;
-    if (m_isPlayed) m_goalPosition=AudioHelper::GetSamplePosition(m_music) + game_data::offset;
+    if (m_isPlayed) m_goalPosition=AudioHelper::GetSamplePosition(m_music);
     else m_goalPosition+=1.f*std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()-m_prevTimestamp).count()/1000;
     m_prevTimestamp=std::chrono::steady_clock().now();
     // std::cout<<"Goal: "<<m_goalPosition<<std::endl;

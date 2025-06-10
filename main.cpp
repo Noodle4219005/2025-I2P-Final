@@ -18,6 +18,6 @@ int main(int argc, char** argv) {
   game.AddNewScene("ranking_panel", new RankingPanel());
   game.AddNewScene("start", new Start());
 
-  game.Start("game", constant::kFPS, constant::kScreenW, constant::kScreenH);
+  game.Start("menu", constant::kFPS, constant::kScreenW, constant::kScreenH);
   return 0;
 }

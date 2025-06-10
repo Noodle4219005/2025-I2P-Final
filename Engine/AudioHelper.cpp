@@ -8,8 +8,8 @@
 
 // FIXME: The BGM have latency while starting
 
-float AudioHelper::BGMVolume = 1.0;
-float AudioHelper::SFXVolume = 1.0;
+float AudioHelper::BGMVolume = 0.7;
+float AudioHelper::SFXVolume = 0.7;
 
 ALLEGRO_SAMPLE_ID AudioHelper::PlayAudio(const std::string& audio) 
 {
@@ -77,7 +77,7 @@ void AudioHelper::ChangeSampleVolume(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sa
 void AudioHelper::ChangeSamplePosition(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, float position) 
 {
     // Get sample frequency (samples per second)
-    unsigned int sample_index = al_get_sample_instance_frequency(sample_instance.get()) * (position / 1000);
+    unsigned int sample_index = al_get_sample_instance_frequency(sample_instance.get()) * (position / 1000) + game_data::offset;
     if (!al_set_sample_instance_position(sample_instance.get(), sample_index))
         throw Engine::Allegro5Exception(("failed to change sample position to " + std::to_string(position) + " s").c_str());
 }
