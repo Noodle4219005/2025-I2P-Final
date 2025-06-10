@@ -23,6 +23,10 @@ void Game::Initialize()
     m_beatmap=std::make_unique<BeatmapParser>(BeatmapParser(game_data::mapID, game_data::difficultyName));
     if (game_data::isDoubleTime) {
         game_data::scrollSpeed/=1.5;
+        game_data::modDivider=1.1;
+    }
+    if (game_data::isNoFailed) {
+        game_data::modMultiplier=0.5;
     }
     
     // Load in the object list

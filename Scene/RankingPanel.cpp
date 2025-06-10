@@ -35,10 +35,16 @@ void RankingPanel::OnMouseMove(int mx, int my)
 {
     m_backButton->OnMouseMove(mx, my);
 }
+
 void RankingPanel::OnMouseDown(int button, int mx, int my)
 {
     std::cout<<"clicked "<<button<<" "<<mx<<" "<<my<<"\n";
     m_backButton->OnMouseDown(button, mx, my);
+}
+
+void RankingPanel::OnKeyDown(int keyCode)
+{
+    if (keyCode==ALLEGRO_KEY_ESCAPE) BackToMenu();
 }
 
 void RankingPanel::Update(float deltaTime)

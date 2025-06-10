@@ -44,7 +44,7 @@ namespace game_data
     float backgroundDim=0.7;
 
     // Mode
-    bool isAuto=true;
+    bool isAuto=false;
     bool isNoFailed=false;
     bool isDoubleTime=false;
 
@@ -60,6 +60,7 @@ namespace game_data
         accuracy=100.f;
         nowGameState=LOADING;
         hp=1000;
+        modMultiplier=modDivider=1.f;
         decltype(hitResults)().swap(hitResults);
     }
 

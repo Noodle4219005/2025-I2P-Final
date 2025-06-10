@@ -14,7 +14,7 @@ class Menu : public Engine::IScene
 public:
     Menu() { ; }
     void Initialize() override;
-    void Terminate() override {}
+    void Terminate() override;
     void Update(float deltaTime) override;
     void OnMouseScroll(int mx, int my, int delta) override;
     void OnMouseDown(int button, int mx, int my) override;
@@ -38,12 +38,13 @@ private:
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> m_music;
     std::shared_ptr<Engine::Image> m_bg;
     bool m_isPlayed;
-    int m_nowMapIndex=0;
+    int m_nowMapIndex=-1;
     int m_nowDiffcultyIndex=0;
     int m_level=0; // 0 for map selection, 1 for difficulty selection
     std::string m_nowPlayingAudioPath="";
     std::string m_beatmapName="";
     std::vector<BeatmapCard> m_difficultyCards;
     void ProcessDifficulty(int beatmapId, std::string beatmapPath);
-    void mapCallBack(std::string beatmapName);
+    void MapCallBack(std::string beatmapName);
+    void DiffCallBack();
 };

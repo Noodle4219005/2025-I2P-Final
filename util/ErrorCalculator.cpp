@@ -131,5 +131,5 @@ void CalculateAcc()
     for (auto i : game_data::hitResults) {
         game_data::accuracy+=i.acc/game_data::hitResults.size();
     }
-    if (game_data::accuracy>=99.98) game_data::accuracy=100;
+    if (game_data::accuracy>=99.999) game_data::accuracy=100;
 }

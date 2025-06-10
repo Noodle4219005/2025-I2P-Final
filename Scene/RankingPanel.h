@@ -13,6 +13,7 @@ public:
     void Terminate() override;
     void OnMouseMove(int mx, int my) override;
     void OnMouseDown(int button, int mx, int my) override;
+    void OnKeyDown(int keyCode) override;
     void Draw() const override;
     void Update(float deltaTime) override;
     void BackToMenu();

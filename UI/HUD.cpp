@@ -137,7 +137,7 @@ void HUD::DrawForeground()
     float avergeHitError=0;
     int count=0;
     for (auto& result : revHitResults) {
-        float a=1.f*(5000-(game_data::gamePosition-result.time))/5000*255;
+        float a=1.f*(10000-(game_data::gamePosition-result.time))/10000*255;
         if (a<=0) break;
         int hitError=result.hitError*(result.isErrorPositive?1:-1)*game_data::hitbarScale;
         count++;

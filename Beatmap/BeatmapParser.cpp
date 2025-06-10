@@ -379,3 +379,13 @@ std::string BeatmapParser::GetDifficultyName()
 {
     return m_difficultyName;
 }
+
+int BeatmapParser::GetMode() 
+{
+    return m_mode;
+}
+
+int BeatmapParser::GetId() 
+{
+    return m_beatmapID;
+}

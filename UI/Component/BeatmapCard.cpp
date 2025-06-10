@@ -17,8 +17,8 @@ BeatmapCard::BeatmapCard(std::string name, std::string author, std::string mappe
     m_name(name), m_author(author), m_mapper(mapper), m_minDiff(minDiffiulty), m_maxDiff(maxDifficulty)
 {
 }
-BeatmapCard::BeatmapCard(std::string name, float diffiulty):
-    m_name(name), m_minDiff(diffiulty), m_maxDiff(-1)
+BeatmapCard::BeatmapCard(std::string name, float diffiulty, int key):
+    m_name(name), m_minDiff(diffiulty), m_maxDiff(-1), m_key(key)
 {
 }
 
@@ -79,7 +79,12 @@ void BeatmapCard::Draw() const
         out<<"-";
         out<<m_maxDiff;
         out<<" / "<<m_author<<" / "<<m_mapper;
-        Engine::Label info{out.str(), "NotoCJK/noto-sans-cjk-black.ttf", 20, (float)x, (float)y+height*2/3, 255, 255, 255};
-        info.Draw();
     }
+    else {
+        out<<m_minDiff;
+        out<<" / ";
+        out<<m_key<<"k";
+    }
+    Engine::Label info{out.str(), "NotoCJK/noto-sans-cjk-black.ttf", 20, (float)x, (float)y+height*2/3, 255, 255, 255};
+    info.Draw();
 } 

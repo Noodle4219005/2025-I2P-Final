@@ -1,6 +1,9 @@
 #include "Menu.h"
 #include "Engine/LOG.hpp"
+#include "Engine/GameEngine.hpp"
 #include "UI/Component/BeatmapCard.h"
+#include "Skin/Skin.h"
+#include "util/Constant.h"
 
 #include <filesystem>
 #include <sstream>
@@ -8,6 +11,8 @@
 #include <iostream>
 #include <algorithm>
 #include <allegro5/keycodes.h>
+#include <random>
+#include <chrono>
 
 void Menu::Initialize() 
 {
@@ -38,12 +43,25 @@ void Menu::Initialize()
 
 
     // preload the music
+    /*
     for (auto map : m_mapList) {
         m_music=AudioHelper::PlaySample(map.audioPath);
         AudioHelper::StopSample(m_music);
     }
+    */
 
+    std::mt19937_64 engine(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+    if (m_nowMapIndex<0) m_nowMapIndex=engine()%m_mapList.size();
     m_isPlayed=false;
+}
+
+void Menu::Terminate() 
+{
+    m_bg.reset();
+    AudioHelper::StopSample(m_music);
+    m_mapList.clear();
+    m_beatmapDifficultiesByName.clear();
+    m_nowPlayingAudioPath="";
 }
 
 void Menu::Update(float deltaTime)
@@ -97,6 +115,11 @@ void Menu::Draw() const
         }
         m_difficultyCards[m_nowDiffcultyIndex].Draw();
     }
+    int selection=0;
+    if (game_data::isAuto) selection+=1;
+    if (game_data::isDoubleTime) selection+=2;
+    if (game_data::isNoFailed) selection+=4;
+    Skin::GetInstance().DrawMod(selection);
 }
 
 
@@ -122,6 +145,11 @@ void Menu::OnMouseDown(int button, int mx, int my)
             map.card.OnMouseDown(button, mx, my);
         }
     }
+    else if (m_level==1) {
+        for (auto diff : m_difficultyCards) {
+            diff.OnMouseDown(button, mx, my);
+        }
+    }
 }
 
 void Menu::OnKeyDown(int keyCode)
@@ -130,7 +158,31 @@ void Menu::OnKeyDown(int keyCode)
     if (keyCode==ALLEGRO_KEY_DOWN) delta=-1;
     else if (keyCode==ALLEGRO_KEY_UP) delta=1;
     else if (keyCode==ALLEGRO_KEY_ENTER) {
-        if (m_level==0) mapCallBack(m_mapList[m_nowMapIndex].name);
+        if (m_level==0) MapCallBack(m_mapList[m_nowMapIndex].name);
+        else if (m_level==1) DiffCallBack();
+        return;
+    }
+    else if (keyCode==ALLEGRO_KEY_ESCAPE) {
+        m_isPlayed=false;
+        m_level=0;
+        return;
+    }
+    else if (keyCode==constant::keyMap["select_auto"]) {
+        game_data::isAuto=!game_data::isAuto;
+        if (game_data::isAuto) {
+            game_data::isNoFailed=false;
+        }
+        return;
+    }
+    else if (keyCode==constant::keyMap["select_dt"]) {
+        game_data::isDoubleTime=!game_data::isDoubleTime;
+        return;
+    }
+    else if (keyCode==constant::keyMap["select_nf"]) {
+        game_data::isNoFailed=!game_data::isNoFailed;
+        if (game_data::isNoFailed) {
+            game_data::isAuto=false;
+        }
         return;
     }
     else return;
@@ -165,6 +217,7 @@ void Menu::ProcessDifficulty (int beatmapId, std::string beatmapPath)
             getline(ss, difficultyName, '[');
             getline(ss, difficultyName, ']');
             BeatmapParser beatmap(beatmapId, difficultyName);
+            if (beatmap.GetMode()!=3) continue;
             difficulties.push_back(beatmap);
             if (difficulties.size()==1) {
                 beatmapName=difficulties.back().GetTitle();
@@ -181,19 +234,26 @@ void Menu::ProcessDifficulty (int beatmapId, std::string beatmapPath)
     m_beatmapDifficultiesByName[beatmapName].swap(difficulties);
     m_mapList.push_back(MapInfo{beatmapId, beatmapName, author, mapper, minDiff, maxDiff, previewTime, audioPath, 
                         BeatmapCard{beatmapName, author, mapper, minDiff, maxDiff}, image});
-    m_mapList.back().card.SetOnClickCallback(std::bind(&Menu::mapCallBack, this, beatmapName));
+    m_mapList.back().card.SetOnClickCallback(std::bind(&Menu::MapCallBack, this, beatmapName));
 }
 
-void Menu::mapCallBack(std::string beatmapName) 
+void Menu::MapCallBack(std::string beatmapName) 
 {
-    std::cout<<"clicked\n";
     m_isPlayed=false;
     m_level=1;
     m_nowDiffcultyIndex=0;
     m_beatmapName=beatmapName;
     decltype(m_difficultyCards)().swap(m_difficultyCards);
     for (auto diff : m_beatmapDifficultiesByName[beatmapName]) {
-        m_difficultyCards.push_back(BeatmapCard{diff.GetDifficultyName(), diff.GetStarRate()});
+        m_difficultyCards.push_back(BeatmapCard{diff.GetDifficultyName(), diff.GetStarRate(), diff.GetTotalColumns()});
+        m_difficultyCards.back().SetOnClickCallback(std::bind(&Menu::DiffCallBack, this));
     }
     m_bg=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetBackgroundImage();
+}
+
+void Menu::DiffCallBack()
+{
+    game_data::mapID=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetId();
+    game_data::difficultyName=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetDifficultyName();
+    Engine::GameEngine::GetInstance().ChangeScene("game");
 }

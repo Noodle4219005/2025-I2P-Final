@@ -30,6 +30,8 @@ public:
     std::string GetMapper();
     float GetStarRate();
     std::string GetDifficultyName();
+    int GetMode();
+    int GetId();
     void PushTiming();
     bool IsMapEnded();
     bool IsVideoAvailable();
