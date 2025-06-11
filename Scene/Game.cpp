@@ -263,7 +263,7 @@ void Game::Update(float deltaTime)
             if (m_activeObjectLists[i-1].empty()) continue;
             for (auto& object : m_activeObjectLists[i-1]) {
                 if (object->IsAvailable()) {
-                    if (game_data::gamePosition-object->GetStartTime()<-10) break;
+                    if (game_data::gamePosition-object->GetStartTime()<-12) break;
                     HUD::GetInstance().OnKeyDown(i-1);
                     object->OnKeyDown();
                     m_prevAutoClicked[i-1]=std::chrono::steady_clock().now();
@@ -283,7 +283,7 @@ void Game::Update(float deltaTime)
                     else HUD::GetInstance().OnKeyUp(i-1);
                 }
                 if (object->IsAvailable()) {
-                    if (object->GetType()&128 && game_data::gamePosition-object->GetEndTime()>=-10) {
+                    if (object->GetType()&128 && game_data::gamePosition-object->GetEndTime()>=-12) {
                         HUD::GetInstance().OnKeyUp(i-1);
                         object->OnKeyUp();
                     }
@@ -294,7 +294,8 @@ void Game::Update(float deltaTime)
     }
 
     // passed
-    if (game_data::gamePosition>m_lastObjectTime+constant::kHitobjectPreviewThreshold) {
+    if (game_data::gamePosition>m_lastObjectTime+constant::kHitobjectPreviewThreshold || 
+        (game_data::gamePosition>=AudioHelper::GetSampleLength(m_music)-10 && game_data::gamePosition>=m_lastObjectTime)) {
         Engine::GameEngine::GetInstance().ChangeScene("ranking_panel");
     }
 

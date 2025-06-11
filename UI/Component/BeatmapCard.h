@@ -19,9 +19,9 @@ public:
     /// and idx>0 is the song after the now one (draw on the bottom of current).
     /// </param>
     void Update(int idx);
-
     void Draw() const;
     void SetOnClickCallback(std::function<void(void)> onClickCallback);
+    double GetDifficulty();
 private:
     std::string m_name;
     std::string m_author;

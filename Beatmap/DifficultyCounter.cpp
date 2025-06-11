@@ -3,9 +3,11 @@
 
 #include <list>
 #include <algorithm>
+#include <iostream>
 
 // Modified from osu mania difficulty counter
 // Reference: https://github.com/ppy/osu/blob/master/osu.Game.Rulesets.Mania/Difficulty/Skills/Strain.cs
+// Reference: https://gitlab.com/MrHeliX/star-rating-calculator/-/tree/master
 
 double Logistic(double x, double midpointOffset, double multiplier, double maxValue = 1);
 double applyDecay(double value, double deltaTime, double decayBase);
@@ -21,6 +23,12 @@ DifficultyCounter::DifficultyCounter(int totalColumn, std::vector<DifficultyHitO
 
 double DifficultyCounter::CalculateDifficulty()
 {
+    // I'm not sure whether this is right
+    for (int i=0; i<m_difficultyHitObjects.size(); i++) {
+        m_index=i;
+        Process();
+    }
+
     const double kReducedSectionCount = 10;
     const double kReducedStrainBaseline = 0.75;
     double difficultyValue=0;
@@ -29,11 +37,14 @@ double DifficultyCounter::CalculateDifficulty()
     for (auto peak : GetCurrentStrainPeaks()) {
         if (peak>0) peaks.push_back(peak);
     }
+    /*
     std::sort(peaks.begin(), peaks.end(), std::greater<double>());
     for (int i=0; i<std::min((double)peaks.size(), kReducedSectionCount); i++) {
         double scale=log10(lerp(1, 10, std::clamp(i/kReducedSectionCount, 0.0, 1.0)));
         peaks[i]*=lerp(kReducedStrainBaseline, 1, scale);
     }
+    */
+    
     std::sort(peaks.begin(), peaks.end(), std::greater<double>());
     for (auto strain : peaks) {
         difficultyValue+=strain * weight;
@@ -99,7 +110,7 @@ void DifficultyCounter::Process()
     while (current.startTime > m_currentSectionEnd) {
         m_strainPeaks.push_back(m_currentSectionPeak); // save strain peak
         StartNewSectionFrom(m_currentSectionEnd);
-        m_currentSectionEnd+kSectionLength;
+        m_currentSectionEnd+=kSectionLength;
     }
 
     double strain=StrainValueAt();
@@ -110,7 +121,6 @@ void DifficultyCounter::Process()
 void DifficultyCounter::StartNewSectionFrom(double time) 
 {
     m_currentSectionPeak=CalculateInitialStrain(time);
-
 }
 
 DifficultyCounter::DifficultyHitObject DifficultyCounter::Previous(int backwardsIndex) const

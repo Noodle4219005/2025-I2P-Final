@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DifficultyCounter.h"
 #include "Objects/HitObject.h"
 #include "Engine/LOG.hpp"
 #include "UI/Component/Image.hpp"

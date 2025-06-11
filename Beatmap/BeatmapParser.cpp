@@ -1,4 +1,5 @@
 #include "BeatmapParser.h"
+#include "DifficultyCounter.h"
 #include "Objects/Hold.h"
 #include "Objects/Node.h"
 #include "Engine/LOG.hpp"
@@ -366,8 +367,42 @@ std::string BeatmapParser::GetMapper()
 }
 
 float BeatmapParser::GetStarRate()
-{
-    return m_starRate;
+{ 
+    if (m_starRate>0) return m_starRate;
+    std::vector<DifficultyCounter::DifficultyHitObject> difficultyHitObjects;
+    double latestTime=0;
+    for (auto note : m_nodeList) {
+        std::stringstream hitObjectTokenSS(note);
+        std::string token;
+        int x, time, type;
+        int endtime=-1;
+        int hitSound; // from 0 to 3, normal, whistle, finish, clap
+        // std::cout<<"read: "<<*m_nodeIter<<std::endl;
+
+        // the magic number is from ppy osu file format
+        // https://osu.ppy.sh/wiki/en/Client/File_formats/osu_%28file_format%29#holds-(osu!mania-only)
+        getline(hitObjectTokenSS, token, ',');
+        x=floor(stoi(token) * m_totalColumns / 512);
+        getline(hitObjectTokenSS, token, ',');
+        getline(hitObjectTokenSS, token, ',');
+        time=stoi(token);
+        getline(hitObjectTokenSS, token, ',');
+        type=stoi(token);
+        getline(hitObjectTokenSS, token, ',');
+        hitSound=stoi(token);
+        if (type&128) {
+            getline(hitObjectTokenSS, token, ',');
+            endtime=stoi(token);
+        }
+        else {
+            endtime=time;
+        }
+        // std::cout<<difficultyHitObjects.size()<<": "<<time<<" "<<endtime<<" "<<time-latestTime<<" "<<x<<"\n";
+        difficultyHitObjects.push_back(DifficultyCounter::DifficultyHitObject{(double)time, (double)endtime, time-latestTime, x});
+        latestTime=time;
+    }
+    DifficultyCounter difficultyCounter(GetTotalColumns(), difficultyHitObjects);
+    return m_starRate=difficultyCounter.CalculateDifficulty();
 }
 
 int BeatmapParser::GetPreviewTime()

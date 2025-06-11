@@ -1,4 +1,4 @@
-#include "BeatmapCard.h"
+﻿#include "BeatmapCard.h"
 #include "Label.hpp"
 #include "Engine/Collider.hpp"
 #include "Engine/GameEngine.hpp"
@@ -17,9 +17,15 @@ BeatmapCard::BeatmapCard(std::string name, std::string author, std::string mappe
     m_name(name), m_author(author), m_mapper(mapper), m_minDiff(minDiffiulty), m_maxDiff(maxDifficulty)
 {
 }
+
 BeatmapCard::BeatmapCard(std::string name, float diffiulty, int key):
     m_name(name), m_minDiff(diffiulty), m_maxDiff(-1), m_key(key)
 {
+}
+
+double BeatmapCard::GetDifficulty() 
+{
+    return m_minDiff;
 }
 
 void BeatmapCard::OnMouseDown(int button, int mx, int my) 
@@ -76,13 +82,13 @@ void BeatmapCard::Draw() const
     out.precision(2);
     if (m_maxDiff>=0) {
         out<<m_minDiff;
-        out<<"-";
+        out<<" - ";
         out<<m_maxDiff;
-        out<<" / "<<m_author<<" / "<<m_mapper;
+        out<<" STARS / "<<m_author<<" / "<<m_mapper;
     }
     else {
         out<<m_minDiff;
-        out<<" / ";
+        out<<" STARS / ";
         out<<m_key<<"k";
     }
     Engine::Label info{out.str(), "NotoCJK/noto-sans-cjk-black.ttf", 20, (float)x, (float)y+height*2/3, 255, 255, 255};

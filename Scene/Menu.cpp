@@ -47,16 +47,24 @@ void Menu::Initialize()
 
     for (auto filepath : beatmapFilePathLists) {
         ProcessDifficulty(filepath.first, filepath.second);
-    }
 
-
-    // preload the music
-    for (int i=0; i<m_mapList.size(); i++) {
-        al_draw_filled_rectangle(0, constant::kScreenH, 1.f*constant::kScreenW*i/m_mapList.size(), constant::kScreenH-10, al_map_rgb(255, 255, 255));
-        al_flip_display();
-        m_music=AudioHelper::PlaySample(m_mapList[i].audioPath);
+        // Preload the music
+        m_music=AudioHelper::PlaySample(m_mapList.back().audioPath);
         AudioHelper::StopSample(m_music);
+        al_draw_filled_rectangle(0, constant::kScreenH, 1.f*constant::kScreenW*m_mapList.size()/beatmapFilePathLists.size(), constant::kScreenH-10, al_map_rgb(255, 255, 255));
+        al_flip_display();
     }
+    std::function<bool(MapInfo, MapInfo)> cmp=[](const MapInfo& a, const MapInfo& b)
+    {
+        if (a.minDiff==b.minDiff) {
+            if (a.maxDiff==b.maxDiff) {
+                return a.name>b.name;
+            }
+            return a.maxDiff<b.maxDiff;
+        }
+        return a.minDiff<b.minDiff;
+    };
+    std::sort(m_mapList.begin(), m_mapList.end(), cmp);
 
     std::mt19937_64 engine(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
     if (m_nowMapIndex<0) m_nowMapIndex=engine()%m_mapList.size();
@@ -71,7 +79,8 @@ void Menu::Terminate()
     m_bg.reset();
     AudioHelper::StopSample(m_music);
     m_mapList.clear();
-    m_beatmapDifficultiesByName.clear();
+    decltype(m_mapList)().swap(m_mapList);
+    decltype(m_beatmapDifficultiesByName)().swap(m_beatmapDifficultiesByName);
     m_nowPlayingAudioPath="";
 }
 
@@ -202,8 +211,15 @@ void Menu::OnKeyDown(int keyCode)
         return;
     }
     else if (keyCode==ALLEGRO_KEY_ESCAPE) {
+        if (m_level==0) {
+            Engine::GameEngine::GetInstance().ChangeScene("start");
+        }
+        else if (m_level==1) {
+            std::string path=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetAudioFilePath();
+            if (m_nowPlayingAudioPath!=path) AudioHelper::StopSample(m_music);
+            m_level=0;
+        }
         m_isPlayed=false;
-        m_level=0;
         return;
     }
     else if (keyCode==constant::keyMap["select_auto"]) {
@@ -226,9 +242,6 @@ void Menu::OnKeyDown(int keyCode)
     }
     else if (keyCode==ALLEGRO_KEY_ALT || keyCode==ALLEGRO_KEY_ALTGR) {
         m_isAltKeyDown=true;
-    }
-    else if (m_level==0 && keyCode==ALLEGRO_KEY_ESCAPE) {
-        Engine::GameEngine::GetInstance().ChangeScene("start");
     }
     else return;
 
@@ -280,7 +293,7 @@ void Menu::ProcessDifficulty (int beatmapId, std::string beatmapPath)
                 image=difficulties.back().GetBackgroundImage();
             }
             minDiff=std::min(minDiff, difficulties.back().GetStarRate());
-            maxDiff=std::max(minDiff, difficulties.back().GetStarRate());
+            maxDiff=std::max(maxDiff, difficulties.back().GetStarRate());
         }
     }
     m_beatmapDifficultiesByName[beatmapName].swap(difficulties);
@@ -300,6 +313,11 @@ void Menu::MapCallBack(std::string beatmapName)
         m_difficultyCards.push_back(BeatmapCard{diff.GetDifficultyName(), diff.GetStarRate(), diff.GetTotalColumns()});
         m_difficultyCards.back().SetOnClickCallback(std::bind(&Menu::DiffCallBack, this));
     }
+    std::function<bool(BeatmapCard, BeatmapCard)> cmp=[&](BeatmapCard a, BeatmapCard b)
+    {
+        return a.GetDifficulty()<b.GetDifficulty();
+    };
+    std::sort(m_difficultyCards.begin(), m_difficultyCards.end(), cmp);
     m_bg=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetBackgroundImage();
 }
 

@@ -91,7 +91,7 @@ void AudioHelper::ChangeSampleSpeed(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sam
 unsigned int AudioHelper::GetSampleLength(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance) 
 {
     // Get sample frequency (samples per second)
-    return al_get_sample_instance_length(sample_instance.get()) * 1000 / al_get_sample_instance_frequency(sample_instance.get());
+    return 1. * al_get_sample_instance_length(sample_instance.get()) * 1000 / al_get_sample_instance_frequency(sample_instance.get());
 }
 
 /* @return now sample position in milisecond */
