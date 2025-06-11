@@ -4,11 +4,12 @@
 #include "AudioHelper.hpp"
 #include "LOG.hpp"
 #include "Resources.hpp"
+#include "util/GameData.h"
 
 // FIXME: The BGM have latency while starting
 
-float AudioHelper::BGMVolume = 1.0;
-float AudioHelper::SFXVolume = 1.0;
+float AudioHelper::BGMVolume = 0.2;
+float AudioHelper::SFXVolume = 0.7;
 
 ALLEGRO_SAMPLE_ID AudioHelper::PlayAudio(const std::string& audio) 
 {
@@ -76,20 +77,27 @@ void AudioHelper::ChangeSampleVolume(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sa
 void AudioHelper::ChangeSamplePosition(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, float position) 
 {
     // Get sample frequency (samples per second)
-    unsigned int sample_index = al_get_sample_instance_frequency(sample_instance.get()) * (position / 1000);
+    unsigned int sample_index = al_get_sample_instance_frequency(sample_instance.get()) * (position / 1000) + game_data::offset;
     if (!al_set_sample_instance_position(sample_instance.get(), sample_index))
         throw Engine::Allegro5Exception(("failed to change sample position to " + std::to_string(position) + " s").c_str());
 }
+
+void AudioHelper::ChangeSampleSpeed(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, float speed)
+{
+    if (!al_set_sample_instance_speed(sample_instance.get(), speed))
+        throw Engine::Allegro5Exception(("failed to change sample speed to " + std::to_string(speed)).c_str());
+}
+
 unsigned int AudioHelper::GetSampleLength(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance) 
 {
     // Get sample frequency (samples per second)
-    return al_get_sample_instance_length(sample_instance.get()) * 1000 / al_get_sample_instance_frequency(sample_instance.get());
+    return 1. * al_get_sample_instance_length(sample_instance.get()) * 1000 / al_get_sample_instance_frequency(sample_instance.get());
 }
 
 /* @return now sample position in milisecond */
-unsigned int AudioHelper::GetSamplePosition(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sampleInstance) 
+double AudioHelper::GetSamplePosition(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sampleInstance) 
 {
-    return al_get_sample_instance_position(sampleInstance.get()) * 1000 / al_get_sample_instance_frequency(sampleInstance.get());
+    return 1. * al_get_sample_instance_position(sampleInstance.get()) / al_get_sample_instance_frequency(sampleInstance.get()) * 1000;
 }
 
 void AudioHelper::StopSample(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance) {

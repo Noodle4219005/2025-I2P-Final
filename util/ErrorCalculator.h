@@ -11,5 +11,8 @@ enum Judgement
     NONE
 };
 
-int getHitValue(int nodePerfectPosition);
+int GetHitValue(int nodePerfectPosition);
+int GetHoldValue(int headHitError, int tailPerfectPosition);
+void IncrementHitCounter(int headHitError, float hitError, bool isPositive);
+void CalculateAcc();
 

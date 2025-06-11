@@ -18,8 +18,17 @@
 #include "Point.hpp"
 #include "Resources.hpp"
 
+#ifdef _WIN32
+#include <windows.h>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
+#endif
+
 namespace Engine {
     void GameEngine::initAllegro5() {
+#ifdef _WIN32
+        timeBeginPeriod(1);
+#endif
         if (!al_init()) throw Allegro5Exception("failed to initialize allegro");
 
         // Initialize add-ons.
@@ -55,7 +64,9 @@ namespace Engine {
 
         // Setup update timer.
         update_timer = al_create_timer(1.0f / fps);
+        // fast_timer=al_create_timer(.0001f);
         if (!update_timer) throw Allegro5Exception("failed to create timer");
+        // if (!fast_timer) throw Allegro5Exception("failed to create timer");
 
         // Setup event queue.
         event_queue = al_create_event_queue();
@@ -68,17 +79,24 @@ namespace Engine {
         // Register display, timer, keyboard, mouse events to the event queue.
         al_register_event_source(event_queue, al_get_display_event_source(display));
         al_register_event_source(event_queue, al_get_timer_event_source(update_timer));
+        // al_register_event_source(event_queue, al_get_timer_event_source(fast_timer));
         al_register_event_source(event_queue, al_get_keyboard_event_source());
         al_register_event_source(event_queue, al_get_mouse_event_source());
         // Can register other event sources, such as timer, video, ...
 
         // Start the timer to update and draw the game.
         al_start_timer(update_timer);
+        // al_start_timer(fast_timer);
+        if (!al_reserve_samples(16)) {
+            LOG(INFO) << "failed to reserve samples!\n";
+            al_uninstall_audio();
+        }
     }
     void GameEngine::startEventLoop() {
         bool done = false;
         ALLEGRO_EVENT event;
         int redraws = 0;
+        int updates=0;
         auto timestamp = std::chrono::steady_clock::now();
         while (!done) {
             al_wait_for_event(event_queue, &event);
@@ -93,6 +111,8 @@ namespace Engine {
                 if (event.timer.source == update_timer)
                     // The redraw timer has ticked.
                     redraws++;
+                //if (event.timer.source == fast_timer)
+                //    updates++;
                 break;
             case ALLEGRO_EVENT_KEY_DOWN:
                 // Event for keyboard key down.
@@ -163,9 +183,6 @@ namespace Engine {
             changeScene(nextScene);
             nextScene = "";
         }
-        // Force lag to avoid bullet-through-paper issue.
-        if (deltaTime >= deltaTimeThreshold)
-            deltaTime = deltaTimeThreshold;
         activeScene->Update(deltaTime);
     }
     void GameEngine::draw() const {
