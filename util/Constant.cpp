@@ -118,4 +118,7 @@ namespace constant
     extern const int kBeatmapCardHeight=50;
     extern const int kBeatmapCardWidth=550;
 
+    extern const int kMusicBarDisplaySeconds=5;
+    extern const int kMusicBarDisplayLength=150;
+    extern const int kMusicBarDisplayWidth=50;
 }

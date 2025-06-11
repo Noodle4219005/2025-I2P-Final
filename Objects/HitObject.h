@@ -9,9 +9,9 @@ public:
     HitObject(int x, int time, int type, float positionY, const std::string& hitSoundPath);
     HitObject();
     virtual ~HitObject()=default;
-    int GetStartTime();
-    int GetEndTime();
-    int GetColumn();
+    int GetStartTime() const;
+    int GetEndTime() const;
+    int GetColumn() const;
     float GetPositionY() const;
     int GetType() const;
     bool IsAlive() const;

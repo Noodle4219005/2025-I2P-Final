@@ -2,6 +2,7 @@
 #include "Engine/LOG.hpp"
 #include "Engine/GameEngine.hpp"
 #include "UI/Component/BeatmapCard.h"
+#include "UI/Component/Label.hpp"
 #include "Skin/Skin.h"
 #include "util/Constant.h"
 
@@ -11,11 +12,18 @@
 #include <iostream>
 #include <algorithm>
 #include <allegro5/keycodes.h>
+#include <allegro5/allegro_primitives.h>
 #include <random>
 #include <chrono>
+#include <thread>
+#include <functional>
 
 void Menu::Initialize() 
 {
+    al_clear_to_color(al_map_rgb(0, 0, 0));
+    Engine::Label loadingText{"Loading", "NotoCJK/noto-sans-cjk-black.ttf", 72, 1.f*constant::kScreenW/2, 1.f*constant::kScreenH/2, 255, 255, 255, 255, 0.5, 0.5};
+    loadingText.Draw();
+    al_flip_display();
     std::string root;
     std::stringstream intSS;
     root="./Map";
@@ -43,20 +51,23 @@ void Menu::Initialize()
 
 
     // preload the music
-    /*
-    for (auto map : m_mapList) {
-        m_music=AudioHelper::PlaySample(map.audioPath);
+    for (int i=0; i<m_mapList.size(); i++) {
+        al_draw_filled_rectangle(0, constant::kScreenH, 1.f*constant::kScreenW*i/m_mapList.size(), constant::kScreenH-10, al_map_rgb(255, 255, 255));
+        al_flip_display();
+        m_music=AudioHelper::PlaySample(m_mapList[i].audioPath);
         AudioHelper::StopSample(m_music);
     }
-    */
 
     std::mt19937_64 engine(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
     if (m_nowMapIndex<0) m_nowMapIndex=engine()%m_mapList.size();
     m_isPlayed=false;
+    m_isAltKeyDown=false;
+    m_audioAnimationStart=std::chrono::steady_clock::now()-std::chrono::seconds(constant::kMusicBarDisplaySeconds+1);
 }
 
 void Menu::Terminate() 
 {
+    m_isAltKeyDown=false;
     m_bg.reset();
     AudioHelper::StopSample(m_music);
     m_mapList.clear();
@@ -115,16 +126,44 @@ void Menu::Draw() const
         }
         m_difficultyCards[m_nowDiffcultyIndex].Draw();
     }
+
     int selection=0;
     if (game_data::isAuto) selection+=1;
     if (game_data::isDoubleTime) selection+=2;
     if (game_data::isNoFailed) selection+=4;
     Skin::GetInstance().DrawMod(selection);
+
+    using std::chrono::duration_cast;
+    using std::chrono::seconds;
+    using std::chrono::steady_clock;
+    if (duration_cast<seconds>(steady_clock::now()-m_audioAnimationStart).count() <= constant::kMusicBarDisplaySeconds) {
+        int width=constant::kMusicBarDisplayWidth*constant::kPixelScale;
+        int length=constant::kMusicBarDisplayLength*constant::kPixelScale;
+        al_draw_filled_rectangle(constant::kScreenW, constant::kScreenH,
+                                 constant::kScreenW-length, constant::kScreenH-width,
+                                 al_map_rgb(20, 20, 20)
+                                 );
+        al_draw_filled_rectangle(constant::kScreenW, constant::kScreenH,
+                                 constant::kScreenW-length*AudioHelper::BGMVolume, constant::kScreenH-width,
+                                 al_map_rgb(255, 255, 255)
+                                 );
+        al_draw_rectangle(constant::kScreenW, constant::kScreenH,
+                                 constant::kScreenW-length, constant::kScreenH-width,
+                                 al_map_rgb(255, 255, 255), 5
+                                 );
+    }
 }
 
 
 void Menu::OnMouseScroll(int mx, int my, int delta)
 {
+    if (m_isAltKeyDown) {
+        AudioHelper::BGMVolume+=delta*0.01;
+        AudioHelper::BGMVolume=std::clamp((double)AudioHelper::BGMVolume, 0.0, 1.0);
+        AudioHelper::ChangeSampleVolume(m_music, AudioHelper::BGMVolume);
+        m_audioAnimationStart=std::chrono::steady_clock::now();
+        return;
+    }
     if (m_level==0 && m_nowMapIndex-delta>=0 && m_nowMapIndex-delta<m_mapList.size()) {
         m_nowMapIndex-=delta;
         if (m_nowPlayingAudioPath!=m_mapList[m_nowMapIndex].audioPath) AudioHelper::StopSample(m_music);
@@ -185,6 +224,12 @@ void Menu::OnKeyDown(int keyCode)
         }
         return;
     }
+    else if (keyCode==ALLEGRO_KEY_ALT || keyCode==ALLEGRO_KEY_ALTGR) {
+        m_isAltKeyDown=true;
+    }
+    else if (m_level==0 && keyCode==ALLEGRO_KEY_ESCAPE) {
+        Engine::GameEngine::GetInstance().ChangeScene("start");
+    }
     else return;
 
     if (m_level==0 && m_nowMapIndex-delta>=0 && m_nowMapIndex-delta<m_mapList.size()) {
@@ -197,6 +242,13 @@ void Menu::OnKeyDown(int keyCode)
         std::string path=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetAudioFilePath();
         if (m_nowPlayingAudioPath!=path) AudioHelper::StopSample(m_music);
         m_isPlayed=false;
+    }
+}
+
+void Menu::OnKeyUp(int keyCode) 
+{
+    if (keyCode==ALLEGRO_KEY_ALT || keyCode==ALLEGRO_KEY_ALTGR) {
+        m_isAltKeyDown=false;
     }
 }
 

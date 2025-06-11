@@ -8,7 +8,7 @@
 
 // FIXME: The BGM have latency while starting
 
-float AudioHelper::BGMVolume = 0.7;
+float AudioHelper::BGMVolume = 0.2;
 float AudioHelper::SFXVolume = 0.7;
 
 ALLEGRO_SAMPLE_ID AudioHelper::PlayAudio(const std::string& audio) 

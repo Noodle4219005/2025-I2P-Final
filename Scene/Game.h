@@ -14,6 +14,7 @@ public:
     void Initialize() override;
     void OnKeyDown(int keyCode) override;
     void OnKeyUp(int keyCode) override;
+    void OnMouseScroll(int mx, int my, int delta) override;
     void OnMouseMove(int mx, int my) override;
     void OnMouseDown(int button, int mx, int my) override;
     void Update(float deltaTime) override;
@@ -31,6 +32,8 @@ private:
     int m_timing=0;
     int m_isPlayed=false;
     float m_goalPosition=0;
+    bool m_isAltKeyDown;
+    std::chrono::steady_clock::time_point m_audioAnimationStart;
     std::chrono::steady_clock::time_point m_prevTimestamp;
     std::vector<std::chrono::steady_clock::time_point> m_prevAutoClicked;
     std::unique_ptr<HitObject> m_nextHitObject;

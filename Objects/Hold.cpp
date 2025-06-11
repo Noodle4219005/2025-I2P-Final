@@ -48,7 +48,7 @@ void Hold::Update()
         IncrementHitCounter(MEH, 151 - 3*game_data::OD, true);
         m_isAvailable=0;
     }
-    if (!m_isAvailable && m_positionEndY>constant::kScreenH) {
+    if (!m_isAvailable && m_positionEndY>game_data::hitPosition*constant::kPixelScale) {
         m_isAlive=0;
     }
 }

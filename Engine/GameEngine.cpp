@@ -87,6 +87,10 @@ namespace Engine {
         // Start the timer to update and draw the game.
         al_start_timer(update_timer);
         // al_start_timer(fast_timer);
+        if (!al_reserve_samples(16)) {
+            LOG(INFO) << "failed to reserve samples!\n";
+            al_uninstall_audio();
+        }
     }
     void GameEngine::startEventLoop() {
         bool done = false;

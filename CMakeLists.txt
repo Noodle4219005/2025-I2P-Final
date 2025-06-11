@@ -90,7 +90,7 @@ add_executable(2025_I2P2_Final
 
     main.cpp
 
-  "Beatmap/MapSet.cpp" "Beatmap/MapSet.h" "UI/Component/BeatmapCard.cpp" "UI/Component/BeatmapCard.h" "Beatmap/DifficultyCounter.cpp" "Beatmap/DifficultyCounter.h")
+  "Beatmap/MapSet.cpp" "Beatmap/MapSet.h" "UI/Component/BeatmapCard.cpp" "UI/Component/BeatmapCard.h" "Beatmap/DifficultyCounter.cpp" "Beatmap/DifficultyCounter.h" "UI/Component/AudioBar.cpp"  )
 
 find_package(allegro CONFIG REQUIRED)
 target_link_libraries(2025_I2P2_Final Allegro::allegro Allegro::allegro_main Allegro::allegro_font Allegro::allegro_dialog 

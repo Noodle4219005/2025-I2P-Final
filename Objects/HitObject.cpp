@@ -23,16 +23,6 @@ HitObject::HitObject()
     Init();
 }
 
-int HitObject::GetStartTime()
-{
-    return m_time;
-}
-
-int HitObject::GetEndTime()
-{
-    return m_endTime;
-}
-
 void HitObject::Init()
 {
     m_lastUpdateTime=-constant::kHitobjectPreviewThreshold;
@@ -40,7 +30,17 @@ void HitObject::Init()
     m_accumulatedCombo=0;
 }
 
-int HitObject::GetColumn() 
+int HitObject::GetStartTime() const
+{
+    return m_time;
+}
+
+int HitObject::GetEndTime() const
+{
+    return m_endTime;
+}
+
+int HitObject::GetColumn()  const
 {
     return m_column;
 }

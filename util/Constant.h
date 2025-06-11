@@ -60,4 +60,8 @@ namespace constant
     extern const ALLEGRO_COLOR kDiffSelectedColor;
     extern const int kBeatmapCardHeight;
     extern const int kBeatmapCardWidth;
+
+    extern const int kMusicBarDisplaySeconds;
+    extern const int kMusicBarDisplayLength;
+    extern const int kMusicBarDisplayWidth;
 }

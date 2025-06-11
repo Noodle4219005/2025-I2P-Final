@@ -9,6 +9,7 @@
 #include "util/Constant.h"
 #include "util/ErrorCalculator.h"
 #include "UI/HUD.h"
+#include "UI/Component/Label.hpp"
 
 #include <algorithm>
 #include <string>
@@ -18,6 +19,11 @@
 
 void Game::Initialize() 
 {
+    al_clear_to_color(al_map_rgb(0, 0, 0));
+    Engine::Label loadingText{"Loading", "NotoCJK/noto-sans-cjk-black.ttf", 72, 1.f*constant::kScreenW/2, 1.f*constant::kScreenH/2, 255, 255, 255, 255, 0.5, 0.5};
+    loadingText.Draw();
+    al_flip_display();
+
     game_data::Refresh();
     game_data::nowGameState=game_data::LOADING;
     m_beatmap=std::make_unique<BeatmapParser>(BeatmapParser(game_data::mapID, game_data::difficultyName));
@@ -33,13 +39,17 @@ void Game::Initialize()
     m_activeObjectLists=std::vector<std::list<std::unique_ptr<HitObject>>>(m_beatmap->GetTotalColumns());
     m_nextHitObject=m_beatmap->GetNextHitObject();
     m_firstObjectTime=m_nextHitObject->GetStartTime();
+    int totalLoadedNotes=0;
     while (m_nextHitObject->GetStartTime()<INT_MAX-5) {
+        al_draw_filled_rectangle(0, constant::kScreenH, 1.f*constant::kScreenW*totalLoadedNotes/m_beatmap->GetTotalNotes(), constant::kScreenH-10, al_map_rgb(255, 255, 255));
+        al_flip_display();
         m_activeObjectLists[m_nextHitObject->GetColumn()].push_back(std::move(m_nextHitObject));
         if (!m_beatmap->IsMapEnded()) {
             m_nextHitObject=std::move(m_beatmap->GetNextHitObject());
             game_data::playtimeLength=m_lastObjectTime=m_nextHitObject->GetEndTime();
         }
         else m_nextHitObject=std::make_unique<HitObject>(HitObject(0, INT_MAX, 0, 0, ""));
+        totalLoadedNotes++;
     }
 
     // Initialize singleton
@@ -93,10 +103,14 @@ void Game::Initialize()
     m_prevAutoClicked.assign(game_data::nkey, std::chrono::steady_clock::now());
 
     game_data::nowGameState=game_data::PLAYING;
+
+    m_isAltKeyDown=false;
+    m_audioAnimationStart=std::chrono::steady_clock::now()-std::chrono::seconds(constant::kMusicBarDisplaySeconds+1);
 }
 
 void Game::Terminate()
 {
+    m_isAltKeyDown=false;
     if (game_data::isDoubleTime) {
         game_data::scrollSpeed*=1.5;
     }
@@ -123,6 +137,10 @@ void Game::OnKeyDown(int keyCode)
         game_data::nowGameState=game_data::PAUSE;
     }
 
+    if (keyCode==ALLEGRO_KEY_ALT || keyCode==ALLEGRO_KEY_ALTGR) {
+        m_isAltKeyDown=true;
+    }
+
     // Auto mode
     if (game_data::isAuto) return;
 
@@ -147,6 +165,10 @@ void Game::OnKeyUp(int keyCode)
 {
     if (game_data::nowGameState==game_data::PAUSE) return;
     if (game_data::nowGameState==game_data::FAILED) return;
+
+    if (keyCode==ALLEGRO_KEY_ALT || keyCode==ALLEGRO_KEY_ALTGR) {
+        m_isAltKeyDown=false;
+    }
 
     // Auto mode
     if (game_data::isAuto) return;
@@ -192,6 +214,17 @@ void Game::OnMouseDown(int button, int mx, int my)
     if (game_data::nowGameState==game_data::FAILED) {
         m_backButton->OnMouseDown(button, mx, my);
         m_retryButton->OnMouseDown(button, mx, my);
+    }
+}
+
+void Game::OnMouseScroll(int mx, int my, int delta)
+{
+    if (m_isAltKeyDown) {
+        AudioHelper::BGMVolume+=delta*0.01;
+        AudioHelper::BGMVolume=std::clamp((double)AudioHelper::BGMVolume, 0.0, 1.0);
+        AudioHelper::ChangeSampleVolume(m_music, AudioHelper::BGMVolume);
+        m_audioAnimationStart=std::chrono::steady_clock::now();
+        return;
     }
 }
 
@@ -326,6 +359,26 @@ void Game::Draw() const
         m_retryButton->Draw();
         m_backButton->Draw();
 
+    }
+
+    using std::chrono::duration_cast;
+    using std::chrono::seconds;
+    using std::chrono::steady_clock;
+    if (duration_cast<seconds>(steady_clock::now()-m_audioAnimationStart).count() <= constant::kMusicBarDisplaySeconds) {
+        int width=constant::kMusicBarDisplayWidth*constant::kPixelScale;
+        int length=constant::kMusicBarDisplayLength*constant::kPixelScale;
+        al_draw_filled_rectangle(constant::kScreenW, constant::kScreenH,
+                                 constant::kScreenW-length, constant::kScreenH-width,
+                                 al_map_rgb(20, 20, 20)
+                                 );
+        al_draw_filled_rectangle(constant::kScreenW, constant::kScreenH,
+                                 constant::kScreenW-length*AudioHelper::BGMVolume, constant::kScreenH-width,
+                                 al_map_rgb(255, 255, 255)
+                                 );
+        al_draw_rectangle(constant::kScreenW, constant::kScreenH,
+                                 constant::kScreenW-length, constant::kScreenH-width,
+                                 al_map_rgb(255, 255, 255), 5
+                                 );
     }
 }
 

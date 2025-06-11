@@ -8,6 +8,7 @@
 #include <vector>
 #include <unordered_map>
 #include <allegro5/allegro_audio.h>
+#include <chrono>
 
 class Menu : public Engine::IScene 
 {
@@ -19,6 +20,7 @@ public:
     void OnMouseScroll(int mx, int my, int delta) override;
     void OnMouseDown(int button, int mx, int my) override;
     void OnKeyDown(int keyCode) override;
+    void OnKeyUp(int keyCode) override;
     void Draw() const override;
 private:
     struct MapInfo 
@@ -38,6 +40,8 @@ private:
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> m_music;
     std::shared_ptr<Engine::Image> m_bg;
     bool m_isPlayed;
+    bool m_isAltKeyDown;
+    std::chrono::steady_clock::time_point m_audioAnimationStart;
     int m_nowMapIndex=-1;
     int m_nowDiffcultyIndex=0;
     int m_level=0; // 0 for map selection, 1 for difficulty selection
