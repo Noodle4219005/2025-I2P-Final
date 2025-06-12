@@ -13,13 +13,13 @@ namespace Engine {
     class Sprite : public Image {
     public:
         // Rotation angle in radians.
-        float Rotation;
+        double Rotation;
         // Pixel in seconds.
         Point Velocity;
         // Color tint.
         ALLEGRO_COLOR Tint;
         // Assume a circle is a good approximation of the sprite's boundary.
-        float CollisionRadius = 0;
+        double CollisionRadius = 0;
         /// <summary>
         /// Construct a sprite object.
         /// </summary>
@@ -37,8 +37,8 @@ namespace Engine {
         /// <param name="g">Color tint green value.</param>
         /// <param name="b">Color tint blue value.</param>
         /// <param name="a">Color tint alpha value.</param>
-        explicit Sprite(std::string img, float x, float y, float w = 0, float h = 0, float anchorX = 0.5f, float anchorY = 0.5f,
-                        float rotation = 0, float vx = 0, float vy = 0, unsigned char r = 255, unsigned char g = 255, unsigned char b = 255, unsigned char a = 255);
+        explicit Sprite(std::string img, double x, double y, double w = 0, double h = 0, double anchorX = 0.5f, double anchorY = 0.5f,
+                        double rotation = 0, double vx = 0, double vy = 0, unsigned char r = 255, unsigned char g = 255, unsigned char b = 255, unsigned char a = 255);
         /// <summary>
         /// Draw to window display.
         /// This is called when the game should redraw the window.
@@ -49,7 +49,7 @@ namespace Engine {
         /// This is called when the game should update its logic, usually 'fps' times per second.
         /// </summary>
         /// <param name="deltaTime">Time elapsed since last update, can be used to calculate value changes.</param>
-        void Update(float deltaTime) override;
+        void Update(double deltaTime) override;
     };
 }
 #endif   // SPRITE_HPP

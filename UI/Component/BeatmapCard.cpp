@@ -13,12 +13,12 @@
 
 using Engine::Collider, Engine::Point;
 
-BeatmapCard::BeatmapCard(std::string name, std::string author, std::string mapper, float minDiffiulty, float maxDifficulty):
+BeatmapCard::BeatmapCard(std::string name, std::string author, std::string mapper, double minDiffiulty, double maxDifficulty):
     m_name(name), m_author(author), m_mapper(mapper), m_minDiff(minDiffiulty), m_maxDiff(maxDifficulty)
 {
 }
 
-BeatmapCard::BeatmapCard(std::string name, float diffiulty, int key):
+BeatmapCard::BeatmapCard(std::string name, double diffiulty, int key):
     m_name(name), m_minDiff(diffiulty), m_maxDiff(-1), m_key(key)
 {
 }
@@ -38,9 +38,9 @@ void BeatmapCard::OnMouseDown(int button, int mx, int my)
     int height=constant::kBeatmapCardHeight*constant::kPixelScale;
     int x=middleX-width/2;
     int y=middleY-height/2;
-    bool mouseIn = Collider::IsPointInRect(Point{(float)mx, (float)my},
-                                           Point{(float)x, (float)y},
-                                           Point{(float)width, (float)height}
+    bool mouseIn = Collider::IsPointInRect(Point{(double)mx, (double)my},
+                                           Point{(double)x, (double)y},
+                                           Point{(double)width, (double)height}
     );
     if (mouseIn) m_onClickedCallBack();
 
@@ -76,21 +76,21 @@ void BeatmapCard::Draw() const
     }
     al_draw_rectangle(x, y, x+width, y+height, color, 5);
     al_draw_filled_rectangle(x, y, x+width, y+height, al_map_rgb(0, 0, 0));
-    Engine::Label name{m_name, "NotoCJK/noto-sans-cjk-black.ttf", 36, (float)x, (float)y, 255, 255, 255};
+    Engine::Label name{m_name, "NotoCJK/noto-sans-cjk-black.ttf", 36, (double)x, (double)y, 255, 255, 255};
     name.Draw();
     std::stringstream out;
     out.precision(2);
     if (m_maxDiff>=0) {
-        out<<m_minDiff;
+        out<<std::fixed<<m_minDiff;
         out<<" - ";
-        out<<m_maxDiff;
+        out<<std::fixed<<m_maxDiff;
         out<<" STARS / "<<m_author<<" / "<<m_mapper;
     }
     else {
-        out<<m_minDiff;
+        out<<std::fixed<<m_minDiff;
         out<<" STARS / ";
         out<<m_key<<"k";
     }
-    Engine::Label info{out.str(), "NotoCJK/noto-sans-cjk-black.ttf", 20, (float)x, (float)y+height*2/3, 255, 255, 255};
+    Engine::Label info{out.str(), "NotoCJK/noto-sans-cjk-black.ttf", 20, (double)x, (double)y+height*2/3, 255, 255, 255};
     info.Draw();
 } 

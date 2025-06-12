@@ -29,6 +29,7 @@ void RankingPanel::Initialize()
 void RankingPanel::Terminate()
 {
     AudioHelper::StopSample(m_music);
+    m_beatmap.release();
 }
 
 void RankingPanel::OnMouseMove(int mx, int my)
@@ -47,7 +48,7 @@ void RankingPanel::OnKeyDown(int keyCode)
     if (keyCode==ALLEGRO_KEY_ESCAPE) BackToMenu();
 }
 
-void RankingPanel::Update(float deltaTime)
+void RankingPanel::Update(double deltaTime)
 {
     m_backButton->Update(deltaTime);
 }
@@ -55,7 +56,7 @@ void RankingPanel::Update(float deltaTime)
 void RankingPanel::Draw() const
 {
     al_clear_to_color(al_map_rgb(0, 0, 0));
-    m_beatmap->GetBackgroundImage()->Draw();
+    m_beatmap->GetBackgroundImage().Draw();
     al_draw_filled_rectangle(0, 0, constant::kScreenW, constant::kScreenH, al_map_rgba(0, 0, 0, 255*game_data::backgroundDim));
     Engine::Image hit300(constant::kSkinPath+'/'+"hit300.png",
                          -50*constant::kPixelScale, constant::kRankingResultsPosition*constant::kPixelScale,

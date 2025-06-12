@@ -134,10 +134,10 @@ void HUD::DrawForeground()
                  al_map_rgb(150, 150, 150), constant::kHitbarWidth*3);
     auto revHitResults{game_data::hitResults};
     std::reverse(revHitResults.begin(), revHitResults.end());
-    float avergeHitError=0;
+    double avergeHitError=0;
     int count=0;
     for (auto& result : revHitResults) {
-        float a=1.f*(10000-(game_data::gamePosition-result.time))/10000*255;
+        double a=1.f*(10000-(game_data::gamePosition-result.time))/10000*255;
         if (a<=0) break;
         int hitError=result.hitError*(result.isErrorPositive?1:-1)*game_data::hitbarScale;
         count++;
@@ -160,7 +160,7 @@ void HUD::DrawForeground()
         }
     }
     if (count) avergeHitError/=count;
-    avergeHitError=std::clamp(avergeHitError, -1.f*mehHitWindow, 1.f*mehHitWindow);
+    avergeHitError=std::clamp(avergeHitError, -1.0*mehHitWindow, 1.0*mehHitWindow);
     al_draw_filled_triangle(screenMiddleX+avergeHitError, constant::kHitbarPosition*constant::kPixelScale,
                             screenMiddleX+avergeHitError-25, constant::kHitbarPosition*constant::kPixelScale-20,
                             screenMiddleX+avergeHitError+25, constant::kHitbarPosition*constant::kPixelScale-20,
@@ -176,6 +176,7 @@ void HUD::DrawForeground()
 
 void HUD::DrawBackground() 
 {
+    al_draw_filled_rectangle(0, 0, constant::kScreenW, constant::kScreenH, al_map_rgba(0, 0, 0, 255*game_data::backgroundDim));
     al_draw_filled_rectangle(startX, 0, startX+playFieldWidth, constant::kScreenH, al_map_rgb(50, 50, 50));
 }
 

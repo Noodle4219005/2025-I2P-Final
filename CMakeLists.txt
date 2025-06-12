@@ -16,6 +16,10 @@ add_executable(2025_I2P2_Final
     # Beatmap
     "Beatmap/BeatmapParser.h" 
     "Beatmap/BeatmapParser.cpp" 
+    "Beatmap/DifficultyCounter.cpp" 
+    "Beatmap/DifficultyCounter.h"
+    "Engine/SingleThreadWorker.h"
+    "Engine/SingleThreadWorker.cpp"
 
     # Engine
     Engine/Allegro5Exception.cpp
@@ -77,6 +81,8 @@ add_executable(2025_I2P2_Final
     UI/Component/Slider.hpp
     "UI/HUD.h" 
     "UI/HUD.cpp" 
+    "UI/Component/BeatmapCard.h"
+    "UI/Component/BeatmapCard.cpp"
 
     # util
     "util/GameData.h"
@@ -85,12 +91,12 @@ add_executable(2025_I2P2_Final
     "util/ErrorCalculator.cpp" 
     "util/Constant.h" 
     "util/Constant.cpp" 
-    "util/DifficultyCalculator.h" 
-    "util/DifficultyCalculator.cpp" 
+     
+     
 
     main.cpp
 
-  "Beatmap/MapSet.cpp" "Beatmap/MapSet.h" "UI/Component/BeatmapCard.cpp" "UI/Component/BeatmapCard.h" "Beatmap/DifficultyCounter.cpp" "Beatmap/DifficultyCounter.h" "UI/Component/AudioBar.cpp"  )
+)
 
 find_package(allegro CONFIG REQUIRED)
 target_link_libraries(2025_I2P2_Final Allegro::allegro Allegro::allegro_main Allegro::allegro_font Allegro::allegro_dialog 

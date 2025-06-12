@@ -14,7 +14,7 @@ namespace game_data
     int hit50=0;
     int miss=0;
     int hp=1000;
-    float accuracy=100.f;
+    double accuracy=100.f;
     double gamePosition=0;
     long long score=0;
     long long hitValue=0;
@@ -25,28 +25,29 @@ namespace game_data
 
     int nowGameState=LOADING;
 
-    long long mapID=1417314;
-    std::string difficultyName="We are Forever Friends"; // which difficulty
-    float starRate=0;
-    float OD=0;
+    long long mapID=2325151;
+    std::string difficultyName="Final Hymn"; // which difficulty
+    double starRate=0;
+    double OD=0;
     int nkey=7;
-    float speed=1;
-    float scrollSpeed=22;
-    float scrollSpeedMultiplier=1.;
-    float hitPosition=408; // from 240 to 480
-    float modMultiplier=1.;
-    float modDivider=1.;
+    double speed=1;
+    double scrollSpeed=22;
+    double scrollSpeedMultiplier=1.;
+    double hitPosition=408; // from 240 to 480
+    double modMultiplier=1.;
+    double modDivider=1.;
     std::vector<HitResult> hitResults{}; // time acc
-    float playtimeLength=0;
-    float hitbarScale=3;
+    double playtimeLength=0;
+    double hitbarScale=3;
 
-    float offset=0;
-    float backgroundDim=0.7;
+    double offset=0;
+    double backgroundDim=0.7;
 
     // Mode
     bool isAuto=false;
     bool isNoFailed=false;
     bool isDoubleTime=false;
+    bool isBPMScaled=false;
 
     void Refresh() 
     {
@@ -65,7 +66,7 @@ namespace game_data
     }
 
     // Return the scroll speed without multiplexer
-    float GetScrollMilisecond() 
+    double GetScrollMilisecond() 
     {
         return (6860 + 6860 * (hitPosition/480)) / scrollSpeed;
     }

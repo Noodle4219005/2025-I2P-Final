@@ -15,7 +15,7 @@ public:
     void OnMouseDown(int button, int mx, int my) override;
     void OnKeyDown(int keyCode) override;
     void Draw() const override;
-    void Update(float deltaTime) override;
+    void Update(double deltaTime) override;
     void BackToMenu();
 private:
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> m_music;

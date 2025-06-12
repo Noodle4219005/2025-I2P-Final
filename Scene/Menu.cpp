@@ -1,6 +1,7 @@
 #include "Menu.h"
 #include "Engine/LOG.hpp"
 #include "Engine/GameEngine.hpp"
+#include "Engine/Resources.hpp"
 #include "UI/Component/BeatmapCard.h"
 #include "UI/Component/Label.hpp"
 #include "Skin/Skin.h"
@@ -16,6 +17,7 @@
 #include <random>
 #include <chrono>
 #include <thread>
+#include <semaphore>
 #include <functional>
 
 void Menu::Initialize() 
@@ -30,10 +32,11 @@ void Menu::Initialize()
 
     std::list<std::pair<int, std::string>> beatmapFilePathLists; // id, filepath
     try {
-        for (auto const& entry : std::filesystem::recursive_directory_iterator(root)) {
+        for (auto const& entry : std::filesystem::directory_iterator(root)) {
             int beatmapId;
             if (entry.is_directory()) {
                 intSS<<entry.path().filename().string();
+                std::cout<<intSS.str()<<"\n";
                 intSS>>beatmapId;
                 beatmapFilePathLists.push_back(make_pair(beatmapId, "./Map/"+entry.path().filename().string()));
                 decltype(intSS)().swap(intSS);
@@ -46,11 +49,12 @@ void Menu::Initialize()
     }
 
     for (auto filepath : beatmapFilePathLists) {
+        std::cout<<filepath.first<<std::endl;
         ProcessDifficulty(filepath.first, filepath.second);
 
         // Preload the music
-        m_music=AudioHelper::PlaySample(m_mapList.back().audioPath);
-        AudioHelper::StopSample(m_music);
+        // m_music=AudioHelper::PlaySample(m_mapList.back().audioPath);
+        // AudioHelper::StopSample(m_music);
         al_draw_filled_rectangle(0, constant::kScreenH, 1.f*constant::kScreenW*m_mapList.size()/beatmapFilePathLists.size(), constant::kScreenH-10, al_map_rgb(255, 255, 255));
         al_flip_display();
     }
@@ -68,30 +72,41 @@ void Menu::Initialize()
 
     std::mt19937_64 engine(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
     if (m_nowMapIndex<0) m_nowMapIndex=engine()%m_mapList.size();
+    m_level=0;
     m_isPlayed=false;
     m_isAltKeyDown=false;
     m_audioAnimationStart=std::chrono::steady_clock::now()-std::chrono::seconds(constant::kMusicBarDisplaySeconds+1);
+    m_worker=new SingleThreadWorker();
 }
 
 void Menu::Terminate() 
 {
     m_isAltKeyDown=false;
-    m_bg.reset();
-    AudioHelper::StopSample(m_music);
-    m_mapList.clear();
+    delete m_worker;
+    if (m_music) AudioHelper::StopSample(m_music);
     decltype(m_mapList)().swap(m_mapList);
     decltype(m_beatmapDifficultiesByName)().swap(m_beatmapDifficultiesByName);
     m_nowPlayingAudioPath="";
 }
 
-void Menu::Update(float deltaTime)
+void Menu::Update(double deltaTime)
 {
     if (m_level==0) {
         if (!m_isPlayed) {
-            if (m_nowPlayingAudioPath!=m_mapList[m_nowMapIndex].audioPath) {
-                m_music=AudioHelper::PlaySample(m_mapList[m_nowMapIndex].audioPath, true, AudioHelper::BGMVolume, m_mapList[m_nowMapIndex].previewTime);
-            }
-            m_nowPlayingAudioPath=m_mapList[m_nowMapIndex].audioPath;
+            m_lastChangeTime=std::chrono::steady_clock::now();
+            auto imageInfo=m_mapList[m_nowMapIndex].imageInfo;
+            m_bg=std::make_unique<Engine::Image>(Engine::Image{imageInfo.filepath, (double)imageInfo.xOffset, (double)imageInfo.yOffset, (double)constant::kScreenW});
+            std::function<void(int)> func=[&](int preIndex)
+            {
+                if (preIndex==m_nowMapIndex) {
+                    if (m_nowPlayingAudioPath==m_mapList[preIndex].audioPath) return;
+                    if (m_music) AudioHelper::StopSample(m_music);
+                    m_music=AudioHelper::PlaySample(m_mapList[preIndex].audioPath, true, AudioHelper::BGMVolume, m_mapList[preIndex].previewTime);
+                    m_nowPlayingAudioPath=m_mapList[preIndex].audioPath;
+                }
+            };
+            Engine::Resources::GetInstance().ReleaseUnused();
+            m_worker->Enqueue([=]() { func(m_nowMapIndex); });
             m_isPlayed=true;
         }
         int idx=-m_nowMapIndex;
@@ -101,26 +116,35 @@ void Menu::Update(float deltaTime)
     }
     else if (m_level==1) {
         if (!m_isPlayed) {
-            std::string path=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetAudioFilePath();
-            if (m_nowPlayingAudioPath!=path) {
-                m_music=AudioHelper::PlaySample(path, true, AudioHelper::BGMVolume, m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetPreviewTime());
-            }
-            m_nowPlayingAudioPath=path;
+            m_lastChangeTime=std::chrono::steady_clock::now();
+            m_bg=std::make_unique<Engine::Image>(m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetBackgroundImage());
+            std::function<void(int)> func=[&](int preIndex)
+            {
+                if (preIndex==m_nowDiffcultyIndex) {
+                    std::string path=m_beatmapDifficultiesByName[m_beatmapName][preIndex].GetAudioFilePath();
+                    if (m_nowPlayingAudioPath==path) return;
+                    if (m_music) AudioHelper::StopSample(m_music);
+                    m_music=AudioHelper::PlaySample(m_beatmapDifficultiesByName[m_beatmapName][preIndex].GetAudioFilePath(), 
+                                                    true, AudioHelper::BGMVolume, m_beatmapDifficultiesByName[m_beatmapName][preIndex].GetPreviewTime());
+                    m_nowPlayingAudioPath=path;
+                }
+            };
+            Engine::Resources::GetInstance().ReleaseUnused();
+            m_worker->Enqueue([=]() {func(m_nowDiffcultyIndex); });
             m_isPlayed=true;
         }
         int idx=-m_nowDiffcultyIndex;
         for (int i=0; i<m_difficultyCards.size(); ++i, ++idx) {
             m_difficultyCards[i].Update(idx);
         }
-        m_bg=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetBackgroundImage();
     }
 }
 
 void Menu::Draw() const
 {
     al_clear_to_color(al_map_rgb(0, 0, 0));
+    if (m_bg) m_bg->Draw();
     if (m_level==0) {
-        m_mapList[m_nowMapIndex].image->Draw();
         int idx=-m_nowMapIndex;
         for (int i=0; i<m_mapList.size(); ++i, ++idx) {
             if (idx!=0) m_mapList[i].card.Draw();
@@ -128,7 +152,6 @@ void Menu::Draw() const
         m_mapList[m_nowMapIndex].card.Draw();
     }
     else if (m_level==1) {
-        if (m_bg) m_bg->Draw();
         int idx=-m_nowDiffcultyIndex;
         for (int i=0; i<m_difficultyCards.size(); ++i, ++idx) {
             m_difficultyCards[i].Draw();
@@ -169,19 +192,19 @@ void Menu::OnMouseScroll(int mx, int my, int delta)
     if (m_isAltKeyDown) {
         AudioHelper::BGMVolume+=delta*0.01;
         AudioHelper::BGMVolume=std::clamp((double)AudioHelper::BGMVolume, 0.0, 1.0);
-        AudioHelper::ChangeSampleVolume(m_music, AudioHelper::BGMVolume);
+        if (m_music) AudioHelper::ChangeSampleVolume(m_music, AudioHelper::BGMVolume);
         m_audioAnimationStart=std::chrono::steady_clock::now();
         return;
     }
     if (m_level==0 && m_nowMapIndex-delta>=0 && m_nowMapIndex-delta<m_mapList.size()) {
         m_nowMapIndex-=delta;
-        if (m_nowPlayingAudioPath!=m_mapList[m_nowMapIndex].audioPath) AudioHelper::StopSample(m_music);
+        // if (m_nowPlayingAudioPath!=m_mapList[m_nowMapIndex].audioPath && m_music) AudioHelper::StopSample(m_music);
         m_isPlayed=false;
     }
     if (m_level==1 && m_nowDiffcultyIndex-delta>=0 && m_nowDiffcultyIndex-delta<m_beatmapDifficultiesByName[m_beatmapName].size()) {
         m_nowDiffcultyIndex-=delta;
         std::string path=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetAudioFilePath();
-        if (m_nowPlayingAudioPath!=path) AudioHelper::StopSample(m_music);
+        // if (m_nowPlayingAudioPath!=path && m_music) AudioHelper::StopSample(m_music);
         m_isPlayed=false;
     }
 }
@@ -216,7 +239,7 @@ void Menu::OnKeyDown(int keyCode)
         }
         else if (m_level==1) {
             std::string path=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetAudioFilePath();
-            if (m_nowPlayingAudioPath!=path) AudioHelper::StopSample(m_music);
+            // if (m_nowPlayingAudioPath!=path && m_music) AudioHelper::StopSample(m_music);
             m_level=0;
         }
         m_isPlayed=false;
@@ -247,13 +270,13 @@ void Menu::OnKeyDown(int keyCode)
 
     if (m_level==0 && m_nowMapIndex-delta>=0 && m_nowMapIndex-delta<m_mapList.size()) {
         m_nowMapIndex-=delta;
-        if (m_nowPlayingAudioPath!=m_mapList[m_nowMapIndex].audioPath) AudioHelper::StopSample(m_music);
+        // if (m_nowPlayingAudioPath!=m_mapList[m_nowMapIndex].audioPath && m_music) AudioHelper::StopSample(m_music);
         m_isPlayed=false;
     }
     if (m_level==1 && m_nowDiffcultyIndex-delta>=0 && m_nowDiffcultyIndex-delta<m_beatmapDifficultiesByName[m_beatmapName].size()) {
         m_nowDiffcultyIndex-=delta;
         std::string path=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetAudioFilePath();
-        if (m_nowPlayingAudioPath!=path) AudioHelper::StopSample(m_music);
+        // if (m_nowPlayingAudioPath!=path && m_music) AudioHelper::StopSample(m_music);
         m_isPlayed=false;
     }
 }
@@ -270,11 +293,11 @@ void Menu::ProcessDifficulty (int beatmapId, std::string beatmapPath)
     std::string beatmapName="";
     std::string author;
     std::string mapper;
-    float minDiff=FLT_MAX, maxDiff=-1;
+    double minDiff=FLT_MAX, maxDiff=-1;
     int previewTime=0;
     std::string audioPath;
     std::vector<BeatmapParser> difficulties;
-    std::shared_ptr<Engine::Image> image;
+    BeatmapParser::BeatmapImageInfo imageInfo;
     for (auto const& entry : std::filesystem::recursive_directory_iterator(beatmapPath)) {
         std::string difficultyName;
         if (entry.is_regular_file() && entry.path().extension()==".osu") {
@@ -290,15 +313,15 @@ void Menu::ProcessDifficulty (int beatmapId, std::string beatmapPath)
                 mapper=difficulties.back().GetMapper();
                 previewTime=difficulties.back().GetPreviewTime();
                 audioPath=difficulties.back().GetAudioFilePath();
-                image=difficulties.back().GetBackgroundImage();
+                imageInfo=difficulties.back().GetBackgroundImageInfo();
             }
-            minDiff=std::min(minDiff, difficulties.back().GetStarRate());
-            maxDiff=std::max(maxDiff, difficulties.back().GetStarRate());
+            minDiff=std::min(1.0*minDiff, difficulties.back().GetStarRate());
+            maxDiff=std::max(1.0*maxDiff, difficulties.back().GetStarRate());
         }
     }
     m_beatmapDifficultiesByName[beatmapName].swap(difficulties);
     m_mapList.push_back(MapInfo{beatmapId, beatmapName, author, mapper, minDiff, maxDiff, previewTime, audioPath, 
-                        BeatmapCard{beatmapName, author, mapper, minDiff, maxDiff}, image});
+                        BeatmapCard{beatmapName, author, mapper, minDiff, maxDiff}, imageInfo});
     m_mapList.back().card.SetOnClickCallback(std::bind(&Menu::MapCallBack, this, beatmapName));
 }
 
@@ -310,15 +333,20 @@ void Menu::MapCallBack(std::string beatmapName)
     m_beatmapName=beatmapName;
     decltype(m_difficultyCards)().swap(m_difficultyCards);
     for (auto diff : m_beatmapDifficultiesByName[beatmapName]) {
-        m_difficultyCards.push_back(BeatmapCard{diff.GetDifficultyName(), diff.GetStarRate(), diff.GetTotalColumns()});
+        m_difficultyCards.push_back(BeatmapCard{diff.GetDifficultyName(), (double)diff.GetStarRate(), diff.GetTotalColumns()});
         m_difficultyCards.back().SetOnClickCallback(std::bind(&Menu::DiffCallBack, this));
     }
     std::function<bool(BeatmapCard, BeatmapCard)> cmp=[&](BeatmapCard a, BeatmapCard b)
     {
         return a.GetDifficulty()<b.GetDifficulty();
     };
+    std::function<bool(BeatmapParser, BeatmapParser)> cmp2=[&](BeatmapParser a, BeatmapParser b)
+    {
+        return a.GetStarRate()<b.GetStarRate();
+    };
     std::sort(m_difficultyCards.begin(), m_difficultyCards.end(), cmp);
-    m_bg=m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetBackgroundImage();
+    std::sort(m_beatmapDifficultiesByName[m_beatmapName].begin(), m_beatmapDifficultiesByName[m_beatmapName].end(), cmp2);
+    m_bg=std::make_unique<Engine::Image>(m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetBackgroundImage());
 }
 
 void Menu::DiffCallBack()

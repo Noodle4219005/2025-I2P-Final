@@ -75,7 +75,7 @@ namespace constant
     const int kGameMaxPixelX=640;
     const int kGameMaxPixelY=480;
 
-    const float kPixelScale=1.f*kScreenH/480;
+    const double kPixelScale=1.f*kScreenH/480;
     const int kOffsetX=(kScreenW-kPixelScale*kGameMaxPixelX)/2;
 
     const int kHitobjectPreviewThreshold=1000; // ms

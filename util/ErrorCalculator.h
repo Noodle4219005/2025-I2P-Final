@@ -13,6 +13,6 @@ enum Judgement
 
 int GetHitValue(int nodePerfectPosition);
 int GetHoldValue(int headHitError, int tailPerfectPosition);
-void IncrementHitCounter(int headHitError, float hitError, bool isPositive);
+void IncrementHitCounter(int headHitError, double hitError, bool isPositive);
 void CalculateAcc();
 

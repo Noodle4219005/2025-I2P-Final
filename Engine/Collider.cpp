@@ -14,7 +14,7 @@ namespace Engine {
     bool Collider::IsRectOverlap(Point r1Min, Point r1Max, Point r2Min, Point r2Max) {
         return (r1Max.x > r2Min.x && r2Max.x > r1Min.x && r1Max.y > r2Min.y && r2Max.y > r1Min.y);
     }
-    bool Collider::IsCircleOverlap(Point c1, float r1, Point c2, float r2) {
+    bool Collider::IsCircleOverlap(Point c1, double r1, Point c2, double r2) {
         return (c1 - c2).Magnitude() < r1 + r2;
     }
 }

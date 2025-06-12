@@ -16,9 +16,9 @@ public:
 
     void DrawHold(int start, int end) const;
     void Draw(int start, int end) const;
-    void DrawScore(int score, float acc) const;
-    void DrawCombo(int combo, float comboExpand) const;
-    void DrawHit(int val, float expand) const;
+    void DrawScore(int score, double acc) const;
+    void DrawCombo(int combo, double comboExpand) const;
+    void DrawHit(int val, double expand) const;
     void DrawPlaySkip() const;
     void DrawPause() const;
     void DrawFailed() const;
@@ -50,7 +50,7 @@ public:
     /// the input value should be in osu pixel
     /// </param>
     void DrawRankingNumber(int number, int x, int y) const;
-    void DrawRankingAccuracy(float acc) const;
+    void DrawRankingAccuracy(double acc) const;
     void DrawRankingMod(int selection) const;
 private:
     enum Sections
@@ -82,16 +82,16 @@ private:
 
     struct ManiaSkinData
     {
-        float columnStart=136; // Where does the left column start?
-        float columnRight=19; // Up to which point can columns be drawn?
-        float columnSpacing=0; // What is the distance between all columns individually?
-        float columnWidth=30; // What widths do all columns have individually?
-        float columnLineWidth=2; // How thick are the column separators individually? 
-        float barLineHeight=1.2; // How thick is the barline?
-        std::vector<float> lightingNWidth; // Which widths should LightingN use for all columns individually?
-        std::vector<float> lightingLWidth; // Which widths should LightingL use for all columns individually?
+        double columnStart=136; // Where does the left column start?
+        double columnRight=19; // Up to which point can columns be drawn?
+        double columnSpacing=0; // What is the distance between all columns individually?
+        double columnWidth=30; // What widths do all columns have individually?
+        double columnLineWidth=2; // How thick are the column separators individually? 
+        double barLineHeight=1.2; // How thick is the barline?
+        std::vector<double> lightingNWidth; // Which widths should LightingN use for all columns individually?
+        std::vector<double> lightingLWidth; // Which widths should LightingL use for all columns individually?
         // If not defined, the height scale of the smallest column width is used
-        float widthForNoteHeightScale; // Which height should all notes have if columns have individual widths?
+        double widthForNoteHeightScale; // Which height should all notes have if columns have individual widths?
         int hitPosition=402; // from 240 to 480
         int lightPosition=413; // On which height should the stage lights be drawn at?
         int scorePosition; // the height score burst appear

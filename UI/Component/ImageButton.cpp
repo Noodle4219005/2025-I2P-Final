@@ -9,12 +9,12 @@
 #include "ImageButton.hpp"
 
 namespace Engine {
-    ImageButton::ImageButton(std::string img, std::string imgIn, float x, float y, float w, float h, float anchorX, float anchorY) : Image(img, x, y, w, h, anchorX, anchorY), imgOut(Resources::GetInstance().GetBitmap(img)), imgIn(Resources::GetInstance().GetBitmap(imgIn)) {
+    ImageButton::ImageButton(std::string img, std::string imgIn, double x, double y, double w, double h, double anchorX, double anchorY) : Image(img, x, y, w, h, anchorX, anchorY), imgOut(Resources::GetInstance().GetBitmap(img)), imgIn(Resources::GetInstance().GetBitmap(imgIn)) {
         Point mouse = GameEngine::GetInstance().GetMousePosition();
         // mouseIn = Collider::IsPointInBitmap(, bmp);
-        mouseIn = Collider::IsPointInRect(Point{(float)mouse.x, (float)mouse.y},
+        mouseIn = Collider::IsPointInRect(Point{(double)mouse.x, (double)mouse.y},
                                           Point{Image::Position.x - GetBitmapWidth()*Anchor.x, Image::Position.y - GetBitmapHeight()*Anchor.y},
-                                          Point{(float)GetBitmapWidth(), (float)GetBitmapHeight()}
+                                          Point{(double)GetBitmapWidth(), (double)GetBitmapHeight()}
                                           );
         imgInName=imgIn;
         imgOutName=img;
@@ -36,9 +36,9 @@ namespace Engine {
     void ImageButton::OnMouseMove(int mx, int my) {
         // mouseIn=Position.x<=mx && mx<=Position.x+GetBitmapWidth() && Position.y<=my && my<=Position.y+GetBitmapHeight();
         // mouseIn = Collider::IsPointInBitmap(Point((mx - Position.x) * GetBitmapWidth() / Size.x + Anchor.x * GetBitmapWidth(), (my - Position.y) * GetBitmapHeight() / Size.y + Anchor.y * GetBitmapHeight()), bmp);
-        mouseIn = Collider::IsPointInRect(Point{(float)mx, (float)my},
+        mouseIn = Collider::IsPointInRect(Point{(double)mx, (double)my},
                                           Point{Image::Position.x - GetBitmapWidth()*Anchor.x, Image::Position.y - GetBitmapHeight()*Anchor.y},
-                                          Point{(float)GetBitmapWidth(), (float)GetBitmapHeight()}
+                                          Point{(double)GetBitmapWidth(), (double)GetBitmapHeight()}
                                           );
         if (!mouseIn || !Enabled) bmp = imgOut;
         else bmp = imgIn;

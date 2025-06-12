@@ -3,7 +3,7 @@
 
 namespace Engine {
     Point::Point() : Point(0, 0) {}
-    Point::Point(float x, float y) : x(x), y(y) {}
+    Point::Point(double x, double y) : x(x), y(y) {}
     bool Point::operator==(const Point &rhs) const {
         return x == rhs.x && y == rhs.y;
     }
@@ -16,10 +16,10 @@ namespace Engine {
     Point Point::operator-(const Point &rhs) const {
         return Point(x - rhs.x, y - rhs.y);
     }
-    Point Point::operator*(const float &rhs) const {
+    Point Point::operator*(const double &rhs) const {
         return Point(x * rhs, y * rhs);
     }
-    Point Point::operator/(const float &rhs) const {
+    Point Point::operator/(const double &rhs) const {
         return Point(x / rhs, y / rhs);
     }
     Point Point::Normalize() const {
@@ -27,16 +27,16 @@ namespace Engine {
             return Point();
         return Point(x, y) / Magnitude();
     }
-    float Point::Dot(const Point &rhs) const {
+    double Point::Dot(const Point &rhs) const {
         return x * rhs.x + y * rhs.y;
     }
-    float Point::MagnitudeSquared() const {
+    double Point::MagnitudeSquared() const {
         return x * x + y * y;
     }
-    float Point::Magnitude() const {
+    double Point::Magnitude() const {
         return sqrt(MagnitudeSquared());
     };
-    Point operator*(const float &lhs, const Point &rhs) {
+    Point operator*(const double &lhs, const Point &rhs) {
         return rhs * lhs;
     }
 }

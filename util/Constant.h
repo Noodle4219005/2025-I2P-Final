@@ -18,7 +18,7 @@ namespace constant
     extern const int kGameMaxPixelX;
     extern const int kGameMaxPixelY;
 
-    extern const float kPixelScale;
+    extern const double kPixelScale;
     extern const int kOffsetX;
 
     extern const int kSkipTimeThreshold; // ms
