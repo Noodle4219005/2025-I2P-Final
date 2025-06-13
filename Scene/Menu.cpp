@@ -93,6 +93,7 @@ void Menu::Update(double deltaTime)
 {
     if (m_level==0) {
         if (!m_isPlayed) {
+            Skin::GetInstance().PlayMenuClick();
             m_lastChangeTime=std::chrono::steady_clock::now();
             auto imageInfo=m_mapList[m_nowMapIndex].imageInfo;
             m_bg=std::make_unique<Engine::Image>(Engine::Image{imageInfo.filepath, (double)imageInfo.xOffset, (double)imageInfo.yOffset, (double)constant::kScreenW});
@@ -116,6 +117,7 @@ void Menu::Update(double deltaTime)
     }
     else if (m_level==1) {
         if (!m_isPlayed) {
+            Skin::GetInstance().PlayMenuClick();
             m_lastChangeTime=std::chrono::steady_clock::now();
             m_bg=std::make_unique<Engine::Image>(m_beatmapDifficultiesByName[m_beatmapName][m_nowDiffcultyIndex].GetBackgroundImage());
             std::function<void(int)> func=[&](int preIndex)
@@ -212,11 +214,13 @@ void Menu::OnMouseScroll(int mx, int my, int delta)
 void Menu::OnMouseDown(int button, int mx, int my) 
 {
     if (m_level==0) {
+        Skin::GetInstance().PlayMenuHit();
         for (auto map : m_mapList) {
             map.card.OnMouseDown(button, mx, my);
         }
     }
     else if (m_level==1) {
+        Skin::GetInstance().PlayMenuHit();
         for (auto diff : m_difficultyCards) {
             diff.OnMouseDown(button, mx, my);
         }
@@ -229,6 +233,7 @@ void Menu::OnKeyDown(int keyCode)
     if (keyCode==ALLEGRO_KEY_DOWN) delta=-1;
     else if (keyCode==ALLEGRO_KEY_UP) delta=1;
     else if (keyCode==ALLEGRO_KEY_ENTER) {
+        Skin::GetInstance().PlayMenuHit();
         if (m_level==0) MapCallBack(m_mapList[m_nowMapIndex].name);
         else if (m_level==1) DiffCallBack();
         return;

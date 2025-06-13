@@ -54,7 +54,8 @@ namespace game_data
     extern double hitPosition;
     extern double modMultiplier;
     extern double modDivider;
-    extern std::vector<HitResult> hitResults; // time acc
+    extern std::vector<HitResult> hitResults; 
+    extern double firstObjectTime;
     extern double playtimeLength;
     extern double hitbarScale;
 

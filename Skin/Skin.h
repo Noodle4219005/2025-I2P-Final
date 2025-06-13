@@ -52,6 +52,8 @@ public:
     void DrawRankingNumber(int number, int x, int y) const;
     void DrawRankingAccuracy(double acc) const;
     void DrawRankingMod(int selection) const;
+    void PlayMenuClick() const;
+    void PlayMenuHit() const;
 private:
     enum Sections
     {

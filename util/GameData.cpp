@@ -37,6 +37,7 @@ namespace game_data
     double modMultiplier=1.;
     double modDivider=1.;
     std::vector<HitResult> hitResults{}; // time acc
+    double firstObjectTime;
     double playtimeLength=0;
     double hitbarScale=3;
 

@@ -112,6 +112,7 @@ void Game::Terminate()
     AudioHelper::StopSample(m_music);
     decltype(m_activeObjectLists)().swap(m_activeObjectLists);
     m_music=nullptr;
+    game_data::firstObjectTime=m_firstObjectTime;
 }
 
 void Game::OnKeyDown(int keyCode)  

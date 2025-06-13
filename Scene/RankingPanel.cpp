@@ -3,6 +3,7 @@
 #include "Engine/GameEngine.hpp"
 #include "util/Constant.h"
 #include "util/GameData.h"
+#include "UI/HiterrorGraph.h"
 #include "Skin/Skin.h"
 
 #include <iostream>
@@ -165,6 +166,13 @@ void RankingPanel::Draw() const
     if (game_data::isDoubleTime) selection+=2;
     if (game_data::isNoFailed) selection+=4;
     Skin::GetInstance().DrawRankingMod(selection);
+
+    HitErrorGraph hitErrorGraph{
+        constant::kOffsetX+constant::kRankingHitErrorGraphPositionX*constant::kPixelScale,
+        constant::kRankingHitErrorGraphPositionY*constant::kPixelScale,
+        250*constant::kPixelScale, 100*constant::kPixelScale
+    };
+    hitErrorGraph.Draw();
 }
 
 void RankingPanel::BackToMenu()

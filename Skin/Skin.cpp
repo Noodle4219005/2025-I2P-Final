@@ -1,6 +1,7 @@
 #include "Skin/Skin.h" 
 #include "util/Constant.h"
 #include "UI/Component/Image.hpp"
+#include "Engine/AudioHelper.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -407,4 +408,14 @@ void Skin::DrawRankingMod(int selection) const
         startX-=image.GetBitmapWidth();
         image.Draw();
     }
+}
+
+void Skin::PlayMenuClick() const
+{
+    AudioHelper::PlayAudio(constant::kSkinPath+"/menuclick.wav");
+}
+
+void Skin::PlayMenuHit() const
+{
+    AudioHelper::PlayAudio(constant::kSkinPath+"/menuhit.ogg");
 }

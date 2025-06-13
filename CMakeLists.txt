@@ -10,9 +10,10 @@ include_directories("res")
 
 file(COPY "res" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY "Map" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY "mania-config.ini" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY allegro_monolith-5.2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable(2025_I2P2_Final
+add_executable(2025_I2P2_Final WIN32
     # Beatmap
     "Beatmap/BeatmapParser.h" 
     "Beatmap/BeatmapParser.cpp" 
@@ -83,6 +84,8 @@ add_executable(2025_I2P2_Final
     "UI/HUD.cpp" 
     "UI/Component/BeatmapCard.h"
     "UI/Component/BeatmapCard.cpp"
+    "UI/HitErrorGraph.cpp"
+    "UI/HiterrorGraph.h"
 
     # util
     "util/GameData.h"
@@ -91,11 +94,8 @@ add_executable(2025_I2P2_Final
     "util/ErrorCalculator.cpp" 
     "util/Constant.h" 
     "util/Constant.cpp" 
-     
-     
 
     main.cpp
-
 )
 
 find_package(allegro CONFIG REQUIRED)
