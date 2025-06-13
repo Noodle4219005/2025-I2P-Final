@@ -14,7 +14,7 @@ void HitErrorGraph::Draw() const
 {
     al_draw_rectangle(m_x, m_y, m_x+m_w, m_y+m_h, al_map_rgb(255, 255, 255), 5);
     const double maxHitError=188 - 3*game_data::OD;
-    const int prevSize=1.0*game_data::hitResults.size()/500;
+    const int prevSize=1.0*game_data::hitResults.size()/50;
     std::list<std::pair<double, double>> plots;
     std::list<double> prev;
     for (auto const& hitResult : game_data::hitResults) {
