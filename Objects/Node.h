@@ -9,7 +9,7 @@
 class Node : public HitObject
 {
 public:
-    Node(int x, int time, int type, float positionY, const std::string& hitSoundPath) :
+    Node(int x, int time, int type, double positionY, const std::string& hitSoundPath) :
         HitObject(x, time, type, positionY, hitSoundPath) { ; }
     void OnKeyDown() override;
     // void OnKeyUp() override;

@@ -6,13 +6,13 @@
 #include <allegro5/allegro_primitives.h>
 #include <iostream>
 
-HitObject::HitObject(int x, int time, int type, int endTime, float positionY, float positionEndY, const std::string& hitSoundPath) :
+HitObject::HitObject(int x, int time, int type, int endTime, double positionY, double positionEndY, const std::string& hitSoundPath) :
     m_column(x), m_time(time), m_type(type), m_endTime(endTime), m_positionY(positionY), m_positionEndY(positionEndY), m_hitSoundPath(hitSoundPath)
 {
     Init();
 }
 
-HitObject::HitObject(int x, int time, int type, float positionY, const std::string& hitSoundPath) :
+HitObject::HitObject(int x, int time, int type, double positionY, const std::string& hitSoundPath) :
     m_column(x), m_time(time), m_type(type), m_endTime(time), m_positionY(positionY), m_positionEndY(positionY), m_hitSoundPath(hitSoundPath)
 {
     Init();
@@ -62,7 +62,7 @@ void HitObject::Update()
     }
 }
 
-float HitObject::GetPositionY() const
+double HitObject::GetPositionY() const
 {
     return m_positionY;
 }

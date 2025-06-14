@@ -6,7 +6,7 @@
 
 int GetHitValue(int nodePerfectPosition)
 {
-    float hiterror=abs(game_data::gamePosition-nodePerfectPosition);
+    double hiterror=abs(game_data::gamePosition-nodePerfectPosition);
 
     // the magic numbers are from the website of osu judgement
     // https://osu.ppy.sh/wiki/en/Gameplay/Judgement/osu%21mania
@@ -59,11 +59,11 @@ int GetHoldValue(int headHitError, int tailPerfectPosition)
     }
 }
 
-void IncrementHitCounter(int judgement, float hitError, bool isPositive)
+void IncrementHitCounter(int judgement, double hitError, bool isPositive)
 {
     // refering to this https://osu.ppy.sh/wiki/en/Gameplay/Score/ScoreV1/osu%21mania
     int preBonus=game_data::bonus;
-    float acc=0;
+    double acc=0;
     switch (judgement) {
     case PERFECT: 
         game_data::hit300H++;
@@ -119,8 +119,8 @@ void IncrementHitCounter(int judgement, float hitError, bool isPositive)
     default:
         break;
     }
-    game_data::hitResults.push_back(game_data::HitResult{(float)game_data::gamePosition, hitError, acc, isPositive});
-    game_data::bonus=std::clamp(preBonus + game_data::hitBonus - game_data::hitPunishment/game_data::modDivider, 0.f, 100.f);
+    game_data::hitResults.push_back(game_data::HitResult{(double)game_data::gamePosition, hitError, acc, isPositive});
+    game_data::bonus=std::clamp(preBonus + game_data::hitBonus - game_data::hitPunishment/game_data::modDivider, 0.0, 100.0);
     CalculateAcc();
 }
 

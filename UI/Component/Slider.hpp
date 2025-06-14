@@ -10,17 +10,17 @@ private:
     Image Bar;
     Image End1;
     Image End2;
-    std::function<void(float value)> OnValueChangedCallback;
-    float value = 0;
+    std::function<void(double value)> OnValueChangedCallback;
+    double value = 0;
 
 public:
-    const float Min = 0;
-    const float Max = 1;
+    const double Min = 0;
+    const double Max = 1;
     bool Down = false;
-    Slider(float x, float y, float w, float h);
+    Slider(double x, double y, double w, double h);
     void Draw() const override;
-    void SetOnValueChangedCallback(std::function<void(float value)> onValueChangedCallback);
-    void SetValue(float value);
+    void SetOnValueChangedCallback(std::function<void(double value)> onValueChangedCallback);
+    void SetValue(double value);
     void OnMouseDown(int button, int mx, int my) override;
     void OnMouseUp(int button, int mx, int my) override;
     void OnMouseMove(int mx, int my) override;

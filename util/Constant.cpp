@@ -68,17 +68,17 @@ namespace constant
 
     const std::string kSkinPath="./res/skin";
     
-    const int kFPS=120;
-    const int kScreenW=1600;
-    const int kScreenH=832;
+    int kFPS=120;
+    int kScreenW=1600;
+    int kScreenH=832;
 
     const int kGameMaxPixelX=640;
     const int kGameMaxPixelY=480;
 
-    const float kPixelScale=1.f*kScreenH/480;
+    const double kPixelScale=1.f*kScreenH/480;
     const int kOffsetX=(kScreenW-kPixelScale*kGameMaxPixelX)/2;
 
-    const int kHitobjectPreviewThreshold=1000; // ms
+    const int kHitobjectPreviewThreshold=1250; // ms
     const int kSkipTimeThreshold=5000+kHitobjectPreviewThreshold; // ms
 
     const int kBlockWidth=75;
@@ -109,6 +109,8 @@ namespace constant
     const int kRankingAccuracyPosition=250;
     const int kRankingSignPosition=150;
     const int kRankingModPosition=200;
+    const int kRankingHitErrorGraphPositionX=400;
+    const int kRankingHitErrorGraphPositionY=300;
 
     // For menu
     extern const ALLEGRO_COLOR kSongNotSelectedColor=al_map_rgb(0, 150, 255);

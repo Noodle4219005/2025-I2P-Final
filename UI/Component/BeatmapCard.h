@@ -6,8 +6,8 @@
 class BeatmapCard 
 {
 public:
-    BeatmapCard(std::string name, std::string author, std::string mapper, float minDiffiulty, float maxDifficulty);
-    BeatmapCard(std::string name, float diffiulty, int key);
+    BeatmapCard(std::string name, std::string author, std::string mapper, double minDiffiulty, double maxDifficulty);
+    BeatmapCard(std::string name, double diffiulty, int key);
     void OnMouseDown(int button, int mx, int my);
 
     /// <summary>
@@ -26,8 +26,8 @@ private:
     std::string m_name;
     std::string m_author;
     std::string m_mapper;
-    float m_minDiff;
-    float m_maxDiff;
+    double m_minDiff;
+    double m_maxDiff;
     int m_key;
     std::function<void(void)> m_onClickedCallBack;
     int m_idx=0;

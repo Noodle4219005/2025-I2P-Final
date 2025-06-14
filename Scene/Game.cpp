@@ -2,6 +2,7 @@
 #include "Engine/IScene.hpp"
 #include "Engine/GameEngine.hpp"
 #include "Engine/AudioHelper.hpp"
+#include "Engine/Resources.hpp"
 #include "Beatmap/BeatmapParser.h"
 #include "Objects/Hold.h"
 #include "Objects/Node.h"
@@ -16,9 +17,11 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_primitives.h>
 #include <chrono>
+#include <memory>
 
 void Game::Initialize() 
 {
+    std::cout<<"MapID: "<<game_data::mapID<<" / Difficutly: "<<game_data::difficultyName<<std::endl;
     al_clear_to_color(al_map_rgb(0, 0, 0));
     Engine::Label loadingText{"Loading", "NotoCJK/noto-sans-cjk-black.ttf", 72, 1.f*constant::kScreenW/2, 1.f*constant::kScreenH/2, 255, 255, 255, 255, 0.5, 0.5};
     loadingText.Draw();
@@ -26,7 +29,7 @@ void Game::Initialize()
 
     game_data::Refresh();
     game_data::nowGameState=game_data::LOADING;
-    m_beatmap=std::make_unique<BeatmapParser>(BeatmapParser(game_data::mapID, game_data::difficultyName));
+    m_beatmap=std::make_unique<BeatmapParser>(game_data::mapID, game_data::difficultyName);
     if (game_data::isDoubleTime) {
         game_data::scrollSpeed/=1.5;
         game_data::modDivider=1.1;
@@ -68,34 +71,25 @@ void Game::Initialize()
     filename=constant::kSkinPath+'/'+"pause-back.png";
     m_backButton=std::move(std::make_unique<Engine::ImageButton>
         (
-            Engine::ImageButton
-            (
-                filename, filename, 
-                constant::kScreenW/2, constant::kPauseBackPosition*constant::kPixelScale,
-                0, 0, 0.5, 0.5
-            )
+            filename, filename, 
+            constant::kScreenW/2, constant::kPauseBackPosition*constant::kPixelScale,
+            0, 0, 0.5, 0.5
         ));
     m_backButton->SetOnClickCallback(std::bind(&Game::BackToMenu, this));
     filename=constant::kSkinPath+'/'+"pause-retry.png";
     m_retryButton=std::move(std::make_unique<Engine::ImageButton>
         (
-            Engine::ImageButton
-            (
-                filename, filename, 
-                constant::kScreenW/2, constant::kPauseRetryPosition*constant::kPixelScale,
-                0, 0, 0.5, 0.5
-            )
+            filename, filename, 
+            constant::kScreenW/2, constant::kPauseRetryPosition*constant::kPixelScale,
+            0, 0, 0.5, 0.5
         ));
     m_retryButton->SetOnClickCallback(std::bind(&Game::Retry, this));
     filename=constant::kSkinPath+'/'+"pause-continue.png";
     m_continueButton=std::move(std::make_unique<Engine::ImageButton>
         (
-            Engine::ImageButton
-            (
-                filename, filename, 
-                constant::kScreenW/2, constant::kPauseContinuePosition*constant::kPixelScale,
-                0, 0, 0.5, 0.5
-            )
+            filename, filename, 
+            constant::kScreenW/2, constant::kPauseContinuePosition*constant::kPixelScale,
+            0, 0, 0.5, 0.5
         ));
     m_continueButton->SetOnClickCallback(std::bind(&Game::ContinueGame, this));
 
@@ -106,6 +100,7 @@ void Game::Initialize()
 
     m_isAltKeyDown=false;
     m_audioAnimationStart=std::chrono::steady_clock::now()-std::chrono::seconds(constant::kMusicBarDisplaySeconds+1);
+    m_bg=std::make_unique<Engine::Image>(m_beatmap->GetBackgroundImage());
 }
 
 void Game::Terminate()
@@ -115,8 +110,9 @@ void Game::Terminate()
         game_data::scrollSpeed*=1.5;
     }
     AudioHelper::StopSample(m_music);
-    m_beatmap.release();
-    m_activeObjectLists.clear();
+    decltype(m_activeObjectLists)().swap(m_activeObjectLists);
+    m_music=nullptr;
+    game_data::firstObjectTime=m_firstObjectTime;
 }
 
 void Game::OnKeyDown(int keyCode)  
@@ -228,7 +224,7 @@ void Game::OnMouseScroll(int mx, int my, int delta)
     }
 }
 
-void Game::Update(float deltaTime)
+void Game::Update(double deltaTime)
 {
     // std::cout<<game_data::gamePosition<<std::endl;
     if (game_data::nowGameState==game_data::PAUSE) {
@@ -305,7 +301,7 @@ void Game::Update(float deltaTime)
 
     int droppedTiming=0;
     if (m_isPlayed) m_goalPosition=AudioHelper::GetSamplePosition(m_music);
-    else m_goalPosition+=1.f*std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()-m_prevTimestamp).count()/1000;
+    else m_goalPosition+=1.0*std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()-m_prevTimestamp).count()/1000.;
     m_prevTimestamp=std::chrono::steady_clock().now();
     // std::cout<<"Goal: "<<m_goalPosition<<std::endl;
     while (m_beatmap->GetNextTiming()<=m_goalPosition) {
@@ -331,8 +327,9 @@ void Game::Update(float deltaTime)
 void Game::Draw() const
 {
     al_clear_to_color(al_map_rgb(0, 0, 0));
-    m_beatmap->GetBackgroundImage().get()->Draw();
-    al_draw_filled_rectangle(0, 0, constant::kScreenW, constant::kScreenH, al_map_rgba(0, 0, 0, 255*game_data::backgroundDim));
+
+    if (m_bg)m_bg->Draw();
+
     HUD::GetInstance().DrawBackground();
     if (game_data::nowGameState==game_data::LOADING) return;
 

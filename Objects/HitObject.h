@@ -5,14 +5,14 @@
 class HitObject
 {
 public:
-    HitObject(int x, int time, int type, int endTime, float positionY, float positionEndY, const std::string& hitSoundPath);
-    HitObject(int x, int time, int type, float positionY, const std::string& hitSoundPath);
+    HitObject(int x, int time, int type, int endTime, double positionY, double positionEndY, const std::string& hitSoundPath);
+    HitObject(int x, int time, int type, double positionY, const std::string& hitSoundPath);
     HitObject();
     virtual ~HitObject()=default;
     int GetStartTime() const;
     int GetEndTime() const;
     int GetColumn() const;
-    float GetPositionY() const;
+    double GetPositionY() const;
     int GetType() const;
     bool IsAlive() const;
     bool IsAvailable() const;
@@ -27,9 +27,9 @@ protected:
     int m_time=0;
     int m_endTime=0;
     int m_type=0;
-    float m_speed=1.;
-    float m_positionY=0;
-    float m_positionEndY=0;
+    double m_speed=1.;
+    double m_positionY=0;
+    double m_positionEndY=0;
     double m_lastUpdateTime=0;
     std::string m_hitSoundPath="";
     int m_perfectHitPosition=0;

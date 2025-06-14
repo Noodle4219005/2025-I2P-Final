@@ -17,7 +17,7 @@ public:
     void OnMouseScroll(int mx, int my, int delta) override;
     void OnMouseMove(int mx, int my) override;
     void OnMouseDown(int button, int mx, int my) override;
-    void Update(float deltaTime) override;
+    void Update(double deltaTime) override;
     void Draw() const override;
     void Terminate() override;
     void GetHitObject();
@@ -31,7 +31,7 @@ private:
     int m_lastObjectTime=0;
     int m_timing=0;
     int m_isPlayed=false;
-    float m_goalPosition=0;
+    double m_goalPosition=0;
     bool m_isAltKeyDown;
     std::chrono::steady_clock::time_point m_audioAnimationStart;
     std::chrono::steady_clock::time_point m_prevTimestamp;
@@ -39,6 +39,7 @@ private:
     std::unique_ptr<HitObject> m_nextHitObject;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> m_music;
     std::unique_ptr<BeatmapParser> m_beatmap;
+    std::unique_ptr<Engine::Image> m_bg;
     std::vector<std::list<std::unique_ptr<HitObject>>> m_activeObjectLists; // the object which is now need to be processed
     std::unique_ptr<Engine::ImageButton> m_continueButton;
     std::unique_ptr<Engine::ImageButton> m_retryButton;

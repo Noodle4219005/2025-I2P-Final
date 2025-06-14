@@ -15,9 +15,9 @@ namespace game_data
 
     struct HitResult 
     {
-        float time;
-        float hitError;
-        float acc;
+        double time;
+        double hitError;
+        double acc;
         bool isErrorPositive; // positive is late
     };
 
@@ -30,7 +30,7 @@ namespace game_data
     extern int hit50;
     extern int miss;
     extern int hp;
-    extern float accuracy;
+    extern double accuracy;
     extern double gamePosition;
     extern long long score;
     extern long long hitValue;
@@ -45,27 +45,29 @@ namespace game_data
 
     extern long long mapID;
     extern std::string difficultyName; // which difficulty
-    extern float starRate;
-    extern float OD;
-    extern float speed;
+    extern double starRate;
+    extern double OD;
+    extern double speed;
     extern int nkey;
-    extern float scrollSpeed;
-    extern float scrollSpeedMultiplier;
-    extern float hitPosition;
-    extern float modMultiplier;
-    extern float modDivider;
-    extern std::vector<HitResult> hitResults; // time acc
-    extern float playtimeLength;
-    extern float hitbarScale;
+    extern double scrollSpeed;
+    extern double scrollSpeedMultiplier;
+    extern double hitPosition;
+    extern double modMultiplier;
+    extern double modDivider;
+    extern std::vector<HitResult> hitResults; 
+    extern double firstObjectTime;
+    extern double playtimeLength;
+    extern double hitbarScale;
 
-    extern float offset; // in ms
-    extern float backgroundDim;
+    extern double offset; // in ms
+    extern double backgroundDim;
 
     // Mode
     extern bool isAuto;
     extern bool isNoFailed;
     extern bool isDoubleTime;
+    extern bool isBPMScaled;
 
-    float GetScrollMilisecond();
+    double GetScrollMilisecond();
 }
 

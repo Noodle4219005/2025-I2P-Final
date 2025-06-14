@@ -7,7 +7,7 @@ namespace Engine {
     /// </summary>
     struct Point {
         // The coordinates of the point.
-        float x, y;
+        double x, y;
         /// <summary>
         /// Construct a Point with coordinate (0, 0).
         /// </summary>
@@ -17,7 +17,7 @@ namespace Engine {
         /// </summary>
         /// <param name="x">X coordinate of the point</param>
         /// <param name="y">Y coordinate of the point</param>
-        explicit Point(float x, float y);
+        explicit Point(double x, double y);
         /// <summary>
         /// Compare between Points.
         /// </summary>
@@ -42,12 +42,12 @@ namespace Engine {
         /// Multiply the point's coordinate with a scalar.
         /// </summary>
         /// <returns>The multiplied result.</returns>
-        Point operator*(const float &rhs) const;
+        Point operator*(const double &rhs) const;
         /// <summary>
         /// Divide the point's coordinate with a scalar.
         /// </summary>
         /// <returns>The divided result.</returns>
-        Point operator/(const float &rhs) const;
+        Point operator/(const double &rhs) const;
         /// <summary>
         /// Make point act like vector and get the normalized vector.
         /// </summary>
@@ -58,18 +58,18 @@ namespace Engine {
         /// </summary>
         /// <param name="rhs">The second vector.</param>
         /// <returns>The inner product.</returns>
-        float Dot(const Point &rhs) const;
+        double Dot(const Point &rhs) const;
         /// <summary>
         /// Make point act like vector and get the squared magnitude.
         /// </summary>
         /// <returns>Squared magnitude of vector.</returns>
-        float MagnitudeSquared() const;
+        double MagnitudeSquared() const;
         /// <summary>
         /// Make point act like vector and get the magnitude.
         /// </summary>
         /// <returns>Magnitude of vector.</returns>
-        float Magnitude() const;
+        double Magnitude() const;
     };
-    Point operator*(const float &lhs, const Point &rhs);
+    Point operator*(const double &lhs, const Point &rhs);
 }
 #endif   // POINT_HPP

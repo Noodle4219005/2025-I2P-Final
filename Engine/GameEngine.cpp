@@ -163,7 +163,7 @@ namespace Engine {
 
             // Update in every cycle
             auto nextTimestamp = std::chrono::steady_clock::now();
-            std::chrono::duration<float> timeElapsed = nextTimestamp - timestamp;
+            std::chrono::duration<double> timeElapsed = nextTimestamp - timestamp;
             timestamp = nextTimestamp;
             // Update and draw the next frame.
             update(timeElapsed.count());
@@ -178,7 +178,7 @@ namespace Engine {
             }
         }
     }
-    void GameEngine::update(float deltaTime) {
+    void GameEngine::update(double deltaTime) {
         if (!nextScene.empty()) {
             changeScene(nextScene);
             nextScene = "";
@@ -212,7 +212,7 @@ namespace Engine {
         LOG(INFO) << "Changed to " << name << " scene";
     }
     void GameEngine::Start(const std::string& firstSceneName, int fps, int screenW, int screenH,
-                           int reserveSamples, const char* title, const char* icon, bool freeMemoryOnSceneChanged, float deltaTimeThreshold) {
+                           int reserveSamples, const char* title, const char* icon, bool freeMemoryOnSceneChanged, double deltaTimeThreshold) {
         LOG(INFO) << "Game Initializing...";
         // Update Allegro5 configs.
         this->fps = fps;

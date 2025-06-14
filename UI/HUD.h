@@ -23,10 +23,10 @@ private:
     int screenMiddleX; 
     int startX;
     int playFieldWidth;
-    float musicBarX;
-    float musicBarY;
-    float musicBarWidth;
-    float musicBarHeight;
+    double musicBarX;
+    double musicBarY;
+    double musicBarWidth;
+    double musicBarHeight;
     std::vector<bool> isKeyPressed;
     int prevCombo;
     int prevHit300H;

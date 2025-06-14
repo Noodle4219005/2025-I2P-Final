@@ -1,6 +1,7 @@
 #include "Skin/Skin.h" 
 #include "util/Constant.h"
 #include "UI/Component/Image.hpp"
+#include "Engine/AudioHelper.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -117,22 +118,22 @@ void Skin::Parse(const std::string& str)
             m_keys=stoi(value);
             m_nkManiaSkin[m_keys];
         } else if (token=="ColumnStart") {
-            m_nkManiaSkin[m_keys].columnStart=stof(value);
+            m_nkManiaSkin[m_keys].columnStart=stod(value);
         } else if (token=="ColumnRight") {
-            m_nkManiaSkin[m_keys].columnRight=stof(value);
+            m_nkManiaSkin[m_keys].columnRight=stod(value);
         } else if (token=="ColumnSpacing") {
-            m_nkManiaSkin[m_keys].columnSpacing=stof(value);
+            m_nkManiaSkin[m_keys].columnSpacing=stod(value);
         } else if (token=="ColumnWidth") {
-            m_nkManiaSkin[m_keys].columnWidth=stof(value);
+            m_nkManiaSkin[m_keys].columnWidth=stod(value);
         } else if (token=="ColumnLineWidth") {
-            m_nkManiaSkin[m_keys].columnLineWidth=stof(value);
+            m_nkManiaSkin[m_keys].columnLineWidth=stod(value);
         } else if (token=="BarlineHeight") {
-            m_nkManiaSkin[m_keys].barLineHeight=stof(value);
+            m_nkManiaSkin[m_keys].barLineHeight=stod(value);
         }
     }
 }
 
-void Skin::DrawScore(int score, float acc) const
+void Skin::DrawScore(int score, double acc) const
 {
     int digit;
     int count=constant::kMaxScore;
@@ -172,8 +173,8 @@ void Skin::DrawScore(int score, float acc) const
         if (i==2) {
             std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-dot.png";
             Engine::Image image(filename, startX, startAccuracyY, 0, 0, 1, 0);
-            image.Position=Engine::Point{1.f*startX - std::max((image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale), 5.f)*2, (float)startAccuracyY};
-            startX-=std::max(image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale, 5.f)*3;
+            image.Position=Engine::Point{1.f*startX - std::max((image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale), 5.0)*2, (double)startAccuracyY};
+            startX-=std::max(image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale, 5.0)*3;
 
             image.Draw();
         }
@@ -181,7 +182,7 @@ void Skin::DrawScore(int score, float acc) const
     }
 }
 
-void Skin::DrawCombo(int combo, float comboExpand) const
+void Skin::DrawCombo(int combo, double comboExpand) const
 {
     int numDigits=CalNumDigits(combo);
     int pictureWidth=0;
@@ -214,7 +215,7 @@ int Skin::CalNumDigits(int number) const
     }
     return numDigits;
 }
-void Skin::DrawHit(int val, float expand) const
+void Skin::DrawHit(int val, double expand) const
 {
     int pictureWidth=0;
     int pictureHeight=0;
@@ -347,7 +348,7 @@ void Skin::DrawRankingNumber(int number, int x, int y) const
     image.Draw();
 }
 
-void Skin::DrawRankingAccuracy(float acc) const
+void Skin::DrawRankingAccuracy(double acc) const
 {
     // Accuracy
     acc=acc*100;
@@ -372,8 +373,8 @@ void Skin::DrawRankingAccuracy(float acc) const
         if (i==2) {
             std::string filename=constant::kSkinPath+"\\"+m_scorePrefix+"-dot@2x.png";
             Engine::Image image(filename, startX, constant::kRankingMaxComboPosition*constant::kPixelScale, 0, 0, 1, 0);
-            image.Position=Engine::Point{1.f*startX - std::max((image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale), 5.f)*2, (float)constant::kRankingMaxComboPosition*constant::kPixelScale};
-            startX-=std::max(image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale, 5.f)*3;
+            image.Position=Engine::Point{1.f*startX - std::max((image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale), 5.0)*2, (double)constant::kRankingMaxComboPosition*constant::kPixelScale};
+            startX-=std::max(image.GetBitmapWidth() - m_scoreOverlap*constant::kPixelScale, 5.0)*3;
 
             image.Draw();
         }
@@ -407,4 +408,14 @@ void Skin::DrawRankingMod(int selection) const
         startX-=image.GetBitmapWidth();
         image.Draw();
     }
+}
+
+void Skin::PlayMenuClick() const
+{
+    AudioHelper::PlayAudio(constant::kSkinPath+"/menuclick.wav");
+}
+
+void Skin::PlayMenuHit() const
+{
+    AudioHelper::PlayAudio(constant::kSkinPath+"/menuhit.ogg");
 }

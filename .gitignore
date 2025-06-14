@@ -3,6 +3,7 @@
 *.dll
 !allegro_monolith-5.2.dll
 out
+build
 
 # Others
 log.txt

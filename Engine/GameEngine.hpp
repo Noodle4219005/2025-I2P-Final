@@ -21,7 +21,7 @@ namespace Engine {
     // Determines whether to free memory between scenes.
     bool freeMemoryOnSceneChanged{};
     // Max delta time for update multiplier. If delta time exceeds this threshold, lag occurs.
-    float deltaTimeThreshold{};
+    double deltaTimeThreshold{};
     // All scenes are stored in hash table for easy access.
     // Reference: Data Structure - Hash table
     std::unordered_map<std::string, IScene*> scenes;
@@ -54,7 +54,7 @@ namespace Engine {
     /// Delegate the update event to the active scene.
     /// </summary>
     /// <param name="deltaTime">Time elapsed since last update, can be used to calculate value changes.</param>
-    void update(float deltaTime);
+    void update(double deltaTime);
     /// <summary>
     /// Delegate the draw event to the active scene.
     /// </summary>
@@ -100,7 +100,7 @@ namespace Engine {
     void Start(const std::string& firstSceneName, int fps = 60, int screenW = 800, int screenH = 600, int reserveSamples = 1000,
                const char* title = "I2P Final - Osu Mania",
                const char* icon = "./res/icon.png", bool freeMemoryOnSceneChanged = false,
-               float deltaTimeThreshold = 0.05);
+               double deltaTimeThreshold = 0.05);
     /// <summary>
     /// Add a new scene to the game. Should only be called once for each scene.
     /// Use inline-new when adding scene in order to support polymorphism,

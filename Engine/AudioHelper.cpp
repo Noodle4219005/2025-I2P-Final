@@ -8,8 +8,8 @@
 
 // FIXME: The BGM have latency while starting
 
-float AudioHelper::BGMVolume = 0.2;
-float AudioHelper::SFXVolume = 0.7;
+double AudioHelper::BGMVolume = 0.2;
+double AudioHelper::SFXVolume = 0.7;
 
 ALLEGRO_SAMPLE_ID AudioHelper::PlayAudio(const std::string& audio) 
 {
@@ -17,7 +17,7 @@ ALLEGRO_SAMPLE_ID AudioHelper::PlayAudio(const std::string& audio)
 
 }
 
-ALLEGRO_SAMPLE_ID AudioHelper::PlayAudio(const std::string &audio, const float& volumeScale) 
+ALLEGRO_SAMPLE_ID AudioHelper::PlayAudio(const std::string &audio, const double& volumeScale) 
 {
     ALLEGRO_SAMPLE *sample = Engine::Resources::GetInstance().GetSample(audio).get();
     ALLEGRO_SAMPLE_ID id;
@@ -46,7 +46,7 @@ void AudioHelper::StopBGM(ALLEGRO_SAMPLE_ID sample)
     Engine::LOG(Engine::INFO) << "stopped audio (bgm)";
 }
 
-std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> AudioHelper::PlaySample(const std::string &audio, bool loop, float volume, float position) 
+std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> AudioHelper::PlaySample(const std::string &audio, bool loop, double volume, double position) 
 {
     // Not safe if release resource while playing, however we only free while change scene, so it's fine.
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> smart_ptr = Engine::Resources::GetInstance().GetSampleInstance(audio);
@@ -66,7 +66,7 @@ std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> AudioHelper::PlaySample(const std::stri
     return smart_ptr;
 }
 
-void AudioHelper::ChangeSampleVolume(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, float volume) 
+void AudioHelper::ChangeSampleVolume(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, double volume) 
 {
     if (!al_set_sample_instance_gain(sample_instance.get(), volume))
         throw Engine::Allegro5Exception(("failed to change sample volume to " + std::to_string(volume)).c_str());
@@ -74,7 +74,7 @@ void AudioHelper::ChangeSampleVolume(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sa
 
 
 /* set the position in milisecond*/
-void AudioHelper::ChangeSamplePosition(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, float position) 
+void AudioHelper::ChangeSamplePosition(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, double position) 
 {
     // Get sample frequency (samples per second)
     unsigned int sample_index = al_get_sample_instance_frequency(sample_instance.get()) * (position / 1000) + game_data::offset;
@@ -82,7 +82,7 @@ void AudioHelper::ChangeSamplePosition(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> 
         throw Engine::Allegro5Exception(("failed to change sample position to " + std::to_string(position) + " s").c_str());
 }
 
-void AudioHelper::ChangeSampleSpeed(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, float speed)
+void AudioHelper::ChangeSampleSpeed(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, double speed)
 {
     if (!al_set_sample_instance_speed(sample_instance.get(), speed))
         throw Engine::Allegro5Exception(("failed to change sample speed to " + std::to_string(speed)).c_str());

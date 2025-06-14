@@ -11,14 +11,14 @@ namespace constant
 
     extern const std::string kSkinPath;
 
-    extern const int kFPS;
-    extern const int kScreenW;
-    extern const int kScreenH;
+    extern int kFPS;
+    extern int kScreenW;
+    extern int kScreenH;
 
     extern const int kGameMaxPixelX;
     extern const int kGameMaxPixelY;
 
-    extern const float kPixelScale;
+    extern const double kPixelScale;
     extern const int kOffsetX;
 
     extern const int kSkipTimeThreshold; // ms
@@ -52,6 +52,8 @@ namespace constant
     extern const int kRankingAccuracyPosition;
     extern const int kRankingSignPosition;
     extern const int kRankingModPosition;
+    extern const int kRankingHitErrorGraphPositionX;
+    extern const int kRankingHitErrorGraphPositionY;
 
     // For menu
     extern const ALLEGRO_COLOR kSongNotSelectedColor;

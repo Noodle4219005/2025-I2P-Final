@@ -155,7 +155,7 @@ void BeatmapParser::Parse(const std::string& str)
             game_data::nkey=m_totalColumns;
         } 
         else if (token=="OverallDifficulty") {
-            m_OD=stof(value);
+            m_OD=stod(value);
             game_data::OD=m_OD;
         }
     }
@@ -179,14 +179,15 @@ void BeatmapParser::Parse(const std::string& str)
                 getline(iss, token, ',');
                 yOffset=stoi(token);
             }
-            m_backgroundImage=std::make_shared<Engine::Image>(Engine::Image(m_beatmapPath+'/'+filename, xOffset*constant::kPixelScale, yOffset*constant::kPixelScale, constant::kScreenW, 0, 0, 0));
+            std::string path=m_beatmapPath+'/'+filename;
+            m_bgImageInfo={path, xOffset*constant::kPixelScale, yOffset*constant::kPixelScale};
         }
         else if (token=="1" || token=="Video") {
         }
     }
     else if (m_section==TIMING_POINTS) {
         std::istringstream iss(str);
-        float beatLength;
+        double beatLength;
         int volume;
         int time, meter;
         int sampleSet, sampleIndex;
@@ -196,7 +197,7 @@ void BeatmapParser::Parse(const std::string& str)
         getline(iss, token, ',');
         time=stoi(token);
         getline(iss, token, ',');
-        beatLength=stof(token);
+        beatLength=stod(token);
         getline(iss, token, ',');
         meter=stoi(token);
         getline(iss, token, ',');
@@ -252,7 +253,7 @@ std::unique_ptr<HitObject> BeatmapParser::GetNextHitObject()
     return std::make_unique<Hold>(Hold(x, time, type, endtime, GetStartPosition(time, time+constant::kHitobjectPreviewThreshold), GetStartPosition(endtime, endtime+constant::kHitobjectPreviewThreshold), "res/skin/normal-hitnormal.wav"));
 }
 
-float BeatmapParser::GetNextTiming() 
+double BeatmapParser::GetNextTiming() 
 {
     if (m_timingIter==m_timingList.end()) return FLT_MAX;
     else return m_timingIter->time;
@@ -298,22 +299,22 @@ int BeatmapParser::GetTotalColumns()
     return m_totalColumns;
 }
 
-float BeatmapParser::GetBPM(float beatLength) 
+double BeatmapParser::GetBPM(double beatLength) 
 {
     return 1 / beatLength * 1000 * 60;
 }
 
-float BeatmapParser::GetSpeedScale() 
+double BeatmapParser::GetSpeedScale() 
 {
     return m_bpmMultipliler;
 }
 
-float BeatmapParser::GetStartPosition(float perfectHitPosition, float deltaTime) 
+double BeatmapParser::GetStartPosition(double perfectHitPosition, double deltaTime) 
 {
-    float ret=0;
-    float speed=constant::kScreenH/game_data::GetScrollMilisecond();
+    double ret=0;
+    double speed=constant::kScreenH/game_data::GetScrollMilisecond();
     auto iter=m_timingIter;
-    std::vector<std::pair<float, float>> changingPoint; // position, speedMultiplier
+    std::vector<std::pair<double, double>> changingPoint; // position, speedMultiplier
     changingPoint.push_back({perfectHitPosition-deltaTime, game_data::scrollSpeedMultiplier});
     while (iter!=m_timingList.end() && iter->time<=perfectHitPosition) {
         if (iter->time>=changingPoint.back().first) {
@@ -341,9 +342,15 @@ int BeatmapParser::GetTotalNotes()
     return m_nodeList.size();
 }
 
-std::shared_ptr<Engine::Image>& BeatmapParser::GetBackgroundImage()
+Engine::Image BeatmapParser::GetBackgroundImage()
 {
-    return m_backgroundImage;
+    auto [path, xOffset, yOffset]=m_bgImageInfo;
+    return Engine::Image(path, xOffset*constant::kPixelScale, yOffset*constant::kPixelScale, constant::kScreenW, 0, 0, 0);
+}
+
+BeatmapParser::BeatmapImageInfo BeatmapParser::GetBackgroundImageInfo()
+{
+    return m_bgImageInfo;
 }
 
 bool BeatmapParser::IsVideoAvailable()
@@ -366,7 +373,7 @@ std::string BeatmapParser::GetMapper()
     return m_creator;
 }
 
-float BeatmapParser::GetStarRate()
+double BeatmapParser::GetStarRate()
 { 
     if (m_starRate>0) return m_starRate;
     std::vector<DifficultyCounter::DifficultyHitObject> difficultyHitObjects;
