@@ -1,6 +1,5 @@
 {
   "dependencies": [
-    "allegro5",
-    "glfw3"
+    "allegro5"
   ]
 }

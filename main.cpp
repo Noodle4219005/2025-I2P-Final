@@ -12,7 +12,9 @@
 
 #include <fstream>
 #include <sstream>
+#ifdef _WIN32
 #include <Windows.h>
+#endif // _WIN32
 
 void SetupVarialbes();
 
@@ -30,12 +32,14 @@ int main(int argc, char** argv) {
   return 0;
 }
 
+#ifdef _WIN32
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     PSTR lpCmdLine, int nCmdShow)
 {
     main(0, 0);
     return 0;
 }
+#endif // _WIN32
 
 void SetupVarialbes()
 {

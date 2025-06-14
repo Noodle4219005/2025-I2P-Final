@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.27)
-project(2025_I2P2_Final)
+project(2025_I2P2_Final VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(ALLEGRO_VSYNC 2) # Turn off vsync
@@ -13,7 +13,7 @@ file(COPY "Map" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY "mania-config.ini" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY allegro_monolith-5.2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable(2025_I2P2_Final WIN32
+set(PROJECT_CPP_H_FILES 
     # Beatmap
     "Beatmap/BeatmapParser.h" 
     "Beatmap/BeatmapParser.cpp" 
@@ -98,6 +98,12 @@ add_executable(2025_I2P2_Final WIN32
     main.cpp
 )
 
+if (WIN32) 
+    add_executable(2025_I2P2_Final WIN32 ${PROJECT_CPP_H_FILES})
+else()
+    add_executable(2025_I2P2_Final ${PROJECT_CPP_H_FILES})
+endif()
+
 find_package(allegro CONFIG REQUIRED)
 target_link_libraries(2025_I2P2_Final Allegro::allegro Allegro::allegro_main Allegro::allegro_font Allegro::allegro_dialog 
                       Allegro::allegro_primitives Allegro::allegro_image Allegro::allegro_ttf 
@@ -107,3 +113,37 @@ target_link_libraries(2025_I2P2_Final)
 if(WIN32)
     target_link_libraries(2025_I2P2_Final winmm)
 endif()
+
+install(TARGETS 2025_I2P2_Final RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+install(DIRECTORY Map DESTINATION bin)
+install(DIRECTORY res DESTINATION bin)
+install(FILES "mania-config.ini" "allegro_monolith-5.2.dll" DESTINATION bin)
+# these command are from https://discourse.cmake.org/t/install-dlls-on-windows/6904 and gpt
+install(CODE [[
+    file(GET_RUNTIME_DEPENDENCIES EXECUTABLES "$<TARGET_FILE:2025_I2P2_Final>"
+        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
+        POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
+        RESOLVED_DEPENDENCIES_VAR deps
+        UNRESOLVED_DEPENDENCIES_VAR udeps
+    )
+
+    foreach(dep IN LISTS deps)
+        file(INSTALL
+            DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
+            TYPE SHARED_LIBRARY
+            FILES "${dep}"
+        )
+    endforeach()
+
+    if(udeps)
+        message(WARNING "Unresolved dependencies: ${udeps}")
+    endif()
+]])
+
+include(InstallRequiredSystemLibraries)
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_PACKAGE_VERSION_MAJOR "${2025_I2P2_Final_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${2025_I2P2_Final_VERSION_MINOR}")
+set(CPACK_GENERATOR "ZIP")
+set(CPACK_SOURCE_GENERATOR "ZIP")
+include(CPack)
