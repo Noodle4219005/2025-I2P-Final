@@ -47,7 +47,7 @@ Reference: McOsu, Osu!Lazer Mania, Quaver, rosu-pp, others (You can see them in 
 ## Build and Run
 > If you want the console to display, please remove WIN32 in add_executable(2025_I2P2_Final WIN32 ... and rebuild with cmake : )
 
-### Dependicies
+### Dependencies
 
 - git and cmake(>=3.21)
 - for windows, you need to install ninja and visual studio runtime first
